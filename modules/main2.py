@@ -7,6 +7,8 @@ from tkinter import filedialog, messagebox, HORIZONTAL, END
 from tkinter.ttk import Progressbar
 from PIL import ImageTk, Image
 from pathlib import Path
+from tkinter import ttk
+from ttkthemes import ThemedTk
 
 
 def mirror_picture(canvas):
@@ -31,19 +33,21 @@ def mirror_picture(canvas):
     xy_frame.mainloop()
 
 
+def on_closing():
+    if messagebox.askokcancel("Выход из программы", "Вы действительно хотите выйти?"):
+        root.destroy()
+
+
 def help_func():
 
-    help_root = Tk()
-    help_root.geometry("500x500")
-    help_frame = Frame(help_root)
+    help_root = ThemedTk(theme=theme)
+    help_root.geometry("600x200")
+    help_frame = ttk.Frame(help_root)
 
-    help_frame.columnconfigure(0, weight=1)
-    help_frame.rowconfigure(list(range(0,40)), weight=5)
-    Label(help_frame, text="Для выполнения расчетов необходимо заполнить все поля приведенные в двух разделах!", width=100, height=20, borderwidth=2, relief="groove",font=("bold", 11), wraplength=250).grid(row=10, column=0, rowspan=2)
-    Label(help_frame, text="Все разделы находятся в меню 'Данные'", width=100, height=20, borderwidth=2, relief="groove",font=("bold", 11), wraplength=250).grid(row=12, column=0, rowspan=2)
-    help_frame.pack(side=RIGHT, fill=BOTH, expand=True)
+    ttk.Label(help_frame, text="Для выполнения расчетов необходимо заполнить все поля приведенные в двух разделах!", width=100, anchor=CENTER, borderwidth=2, relief="groove").pack(side=TOP, fill=BOTH, expand=True)
+    ttk.Label(help_frame, text="Все разделы находятся в меню 'Входные данные'", width=100, anchor=CENTER, borderwidth=2, relief="groove").pack(side=BOTTOM, fill=BOTH, expand=True)
+    help_frame.pack(side=LEFT, fill=BOTH, expand=True)
     help_root.mainloop()
-    help_frame.main_loop()
 
 
 def validate_numbers(index, numbers):
@@ -156,13 +160,13 @@ def subbmit_values(main):
         main.current_frame.destroy()
         main.current_frame = None
 
-        progress_frame = Frame(root)
+        progress_frame = ttk.Frame(root)
         progress_frame.rowconfigure(list(range(0,50)), weight=1)
         progress_frame.columnconfigure(list(range(0,11)), weight=1)
 
         progress_bar = Progressbar(progress_frame, orient=HORIZONTAL, mode='indeterminate')
         progress_bar.grid(row=20, column=3, columnspan=5, sticky="EWNS")
-        progress_bar_label = Label(progress_frame, text="Обработка данных...", font=("bold", 12))
+        progress_bar_label = ttk.Label(progress_frame, text="Обработка данных...", anchor=CENTER, borderwidth=2, relief="groove")
         progress_bar_label.grid(row=19, column=3, columnspan=5, sticky="EWNS")
         progress_bar.start()
         progress_frame.pack(side=BOTTOM, anchor=E, fill=BOTH, expand=True)
@@ -199,44 +203,44 @@ def main_properties(main):
     main.current_frame = main_frame
 
 
-    Label(main_frame, text="Общие данные линии", width=55, height=2, borderwidth=2, relief="groove",font=("bold", 13)).grid(row=0, column=0, columnspan=4, sticky="EWNS")
+    ttk.Label(main_frame, text="Общие данные линии", width=55, anchor=CENTER, borderwidth=2, relief="groove").grid(row=0, column=0, columnspan=4, sticky="EWNS")
 
     for i, (variable, label, var, ed_iz) in enumerate(main.main_entry_list_names, start=1):
 
         if i == 1:
-            Label(main_frame, text=label, width=25, height=2, borderwidth=2, relief="groove",font=("bold", 11)).grid(row=i, column=0, sticky="EWNS")
-            e=Entry(main_frame, width=40, textvariable=eval(variable)); e.grid(row=i, column=1, columnspan=2, sticky="EWNS")
+            ttk.Label(main_frame, text=label, width=25, anchor=CENTER, borderwidth=2, relief="groove").grid(row=i, column=0, sticky="EWNS")
+            e=ttk.Entry(main_frame, width=40, textvariable=eval(variable)); e.grid(row=i, column=1, columnspan=2, sticky="EWNS")
             main.all_entries.append(e)
         elif i == 2:
-            Label(main_frame, text=label, width=25, height=2, borderwidth=2, relief="groove",font=("bold", 11)).grid(row=i, column=0, sticky="EWNS")
-            eb=Entry(main_frame, width=40, textvariable=eval(variable)); eb.grid(row=i, column=1, columnspan=2, sticky="EWNS")
+            ttk.Label(main_frame, text=label, width=25, anchor=CENTER, borderwidth=2, relief="groove").grid(row=i, column=0, sticky="EWNS")
+            eb=ttk.Entry(main_frame, width=40, textvariable=eval(variable)); eb.grid(row=i, column=1, columnspan=2, sticky="EWNS")
             main.all_entries.append(eb)
             eb.insert(0, 'Каждую через ","')
             eb.bind('<Button-1>', on_click)
             on_click_id = eb.bind('<Button-1>', on_click)
         elif ed_iz:
-            Label(main_frame, text=label, width=25, height=2, borderwidth=2, relief="groove",font=("bold", 11)).grid(row=i, column=0, sticky="EWNS")
-            e=Entry(main_frame, width=40, validate="key", validatecommand=vcmd, textvariable=eval(variable)); e.grid(row=i, column=1, columnspan=2, sticky="EWNS")
+            ttk.Label(main_frame, text=label, width=25, anchor=CENTER, borderwidth=2, relief="groove").grid(row=i, column=0, sticky="EWNS")
+            e=ttk.Entry(main_frame, width=40, validate="key", validatecommand=vcmd, textvariable=eval(variable)); e.grid(row=i, column=1, columnspan=2, sticky="EWNS")
             main.all_entries.append(e)
             OptionMenu(main_frame, eval(var), *ed_iz).grid(row=i, column=3, sticky="EWNS")
         else:
-            Label(main_frame, text=label, width=25, height=2, borderwidth=2, relief="groove",font=("bold", 11)).grid(row=i, column=0, sticky="EWNS")
-            e=Entry(main_frame, width=40, validate="key", validatecommand=vcmd, textvariable=eval(variable)); e.grid(row=i, column=1, columnspan=2, sticky="EWNS")
+            ttk.Label(main_frame, text=label, width=25, anchor=CENTER, borderwidth=2, relief="groove").grid(row=i, column=0, sticky="EWNS")
+            e=ttk.Entry(main_frame, width=40, validate="key", validatecommand=vcmd, textvariable=eval(variable)); e.grid(row=i, column=1, columnspan=2, sticky="EWNS")
             main.all_entries.append(e)
 
 
-    Label(main_frame, text="Характеристика проводов", width=55, height=2, borderwidth=2, relief="groove",font=("bold", 13)).grid(row=10, column=0, columnspan=4, sticky="EWNS")
+    ttk.Label(main_frame, text="Характеристика проводов", width=55, anchor=CENTER, borderwidth=2, relief="groove").grid(row=10, column=0, columnspan=4, sticky="EWNS")
 
     for i, mat_lab in enumerate(main.mat_props, start=12):
-        Label(main_frame, text=mat_lab, width=15, borderwidth=2, relief="groove",font=("bold", 13)).grid(row=i, column=0, sticky="EWNS")
+        ttk.Label(main_frame, text=mat_lab, width=15, anchor=CENTER, borderwidth=2, relief="groove").grid(row=i, column=0, sticky="EWNS")
 
 
     for i, mat_head in enumerate(main.mat_headers, start=1):
-        Label(main_frame, text=mat_head, width=15, borderwidth=2, relief="groove",font=("bold", 13)).grid(row=11, column=i, sticky="EWNS")
+        ttk.Label(main_frame, text=mat_head, width=15, anchor=CENTER, borderwidth=2, relief="groove").grid(row=11, column=i, sticky="EWNS")
 
     for j, provod in enumerate(main.types_cables, start=1):
         for i, character in enumerate(main.mater_charac, start=12):
-            me=Entry(main_frame, width=20, textvariable=eval(provod+character), validate="key", validatecommand=vcmd); me.grid(row=i, column=j, sticky="EWNS")
+            me=ttk.Entry(main_frame, width=20, textvariable=eval(provod+character), validate="key", validatecommand=vcmd); me.grid(row=i, column=j, sticky="EWNS")
             main.all_entries.append(me)
 
     OptionMenu(main_frame, eval(main.mat_edin_izmer[0][0]), *main.mat_edin_izmer[0][1]).grid(row=13, column=3, sticky="EWNS")
@@ -275,8 +279,8 @@ def draw_picture(canvas):
     canvas.create_image(0, 0, anchor=NW, image=img)
 
 
-    Label(xy_frame, text="Y", width=1, borderwidth=2, relief="groove",font=("bold", 13)).grid(row=1, column=3, sticky="EWNS")
-    Label(xy_frame, text="X", width=1, borderwidth=2, relief="groove",font=("bold", 13)).grid(row=1, column=2, sticky="EWNS")
+    ttk.Label(xy_frame, text="Y", width=1, anchor=CENTER, borderwidth=2, relief="groove").grid(row=1, column=3, sticky="EWNS")
+    ttk.Label(xy_frame, text="X", width=1, anchor=CENTER, borderwidth=2, relief="groove").grid(row=1, column=2, sticky="EWNS")
 
 
     # ROPE LABELS
@@ -287,7 +291,7 @@ def draw_picture(canvas):
 
 
     for i, label in enumerate(main.xyframe_label_dict[frame.get()], start=2):
-        l=Label(xy_frame, text=label, width=4, borderwidth=2, relief="groove",font=("bold", 13)); l.grid(row=i, column=1, sticky="EWNS")
+        l=ttk.Label(xy_frame, text=label, width=4, anchor=CENTER, borderwidth=2, relief="groove"); l.grid(row=i, column=1, sticky="EWNS")
         main.xy_labels.append(l)
 
 
@@ -302,7 +306,7 @@ def draw_picture(canvas):
             inp_var = (rope+xy).lower()
             exec(inp_var + "=StringVar()")
             main.xy_var_list.append(eval(inp_var))
-            xye=Entry(xy_frame, textvariable=eval(inp_var), width=1, validate="key", validatecommand=vcmd); xye.grid(row=i, column=j, sticky="EWNS")
+            xye=ttk.Entry(xy_frame, textvariable=eval(inp_var), width=1, validate="key", validatecommand=vcmd); xye.grid(row=i, column=j, sticky="EWNS")
             main.xy_grid_list.append(xye)
 
 
@@ -312,9 +316,9 @@ def draw_picture(canvas):
 
 def type_razche(xy_frame):
         if inp_faza_razshep.get():
-            r1=Radiobutton(xy_frame, text="(2) Двойная", value=1, variable=inp_type_razchep); r1.grid(row=11, column=1, columnspan=3, sticky="WNS")
-            r2=Radiobutton(xy_frame, text="(3) Треугольник", value=2, variable=inp_type_razchep); r2.grid(row=12, column=1, columnspan=3, sticky="WNS")
-            r3=Radiobutton(xy_frame, text="(4) Квардрат", value=3, variable=inp_type_razchep); r3.grid(row=13, column=1, columnspan=3, sticky="WNS")
+            r1=ttk.Radiobutton(xy_frame, text="(2) Двойная", value=1, variable=inp_type_razchep); r1.grid(row=11, column=1, columnspan=3, sticky="WNS")
+            r2=ttk.Radiobutton(xy_frame, text="(3) Треугольник", value=2, variable=inp_type_razchep); r2.grid(row=12, column=1, columnspan=3, sticky="WNS")
+            r3=ttk.Radiobutton(xy_frame, text="(4) Квардрат", value=3, variable=inp_type_razchep); r3.grid(row=13, column=1, columnspan=3, sticky="WNS")
             main.rad_but_list = [r1, r2, r3]
         else:
             for rad_but in main.rad_but_list:
@@ -329,21 +333,21 @@ def xy_properties(main):
     main.current_frame = xy_frame
 
 
-    Label(xy_frame, text="Характеристика опор", width=75, height=2, borderwidth=2, relief="groove",font=("bold", 13)).grid(row=0, column=0, columnspan=4, sticky="EWNS")
+    ttk.Label(xy_frame, text="Характеристика опор", width=75, anchor=CENTER, borderwidth=2, relief="groove").grid(row=0, column=0, columnspan=4, sticky="EWNS")
     canvas = Canvas(xy_frame, width = 281, height = 313, bg='white')
     canvas.grid(row=1, rowspan=9, column=0, sticky="EWNS")
 
-    main.mirror_button = Button(xy_frame, text="<>", command=lambda:mirror_picture(canvas))
+    main.mirror_button = ttk.Button(xy_frame, text="<>", command=lambda:mirror_picture(canvas), cursor='hand2')
     main.mirror_button.grid(row=9, column=0, sticky="SE")
     main.mirror_button["state"] = "disabled"
 
-    Label(xy_frame, text="Тип опоры", width=25, height=2, borderwidth=2, relief="groove",font=("bold", 13)).grid(row=10, column=0, columnspan=1, sticky="EWNS")
+    ttk.Label(xy_frame, text="Тип опоры", width=25, anchor=CENTER, borderwidth=2, relief="groove").grid(row=10, column=0, columnspan=1, sticky="EWNS")
 
-    Checkbutton(xy_frame, text="Фаза разщеплена",
+    ttk.Checkbutton(xy_frame, text="Фаза разщеплена",
                  onvalue = True, offvalue = False,
                  variable=inp_faza_razshep,
-                 command = lambda: type_razche(xy_frame),
-                indicatoron=1).grid(row=10, column=1, columnspan=3, sticky="WNSE")
+                 command = lambda: type_razche(xy_frame), cursor='hand2'
+                ).grid(row=10, column=1, columnspan=3, sticky="WNSE")
 
 
     def resize_bg(event):
@@ -359,9 +363,9 @@ def xy_properties(main):
         bg2 = ImageTk.PhotoImage(resized)
         canvas.create_image(0, 0, image=bg2, anchor='nw')
 
-    Radiobutton(xy_frame, text="Одноцепная промежуточная", variable=frame, value=1, command=lambda:draw_picture(canvas)).grid(row=11, column=0, sticky="WNS")
-    Radiobutton(xy_frame, text="Двухцепная промежуточная", variable=frame, value=2, command=lambda:draw_picture(canvas)).grid(row=12, column=0, sticky="WNS")
-    Radiobutton(xy_frame, text="Портальная промежуточная", variable=frame, value=3, command=lambda:draw_picture(canvas)).grid(row=13, column=0, sticky="WNS")
+    ttk.Radiobutton(xy_frame, text="Одноцепная промежуточная", variable=frame, value=1, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=11, column=0, sticky="WNS")
+    ttk.Radiobutton(xy_frame, text="Двухцепная промежуточная", variable=frame, value=2, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=12, column=0, sticky="WNS")
+    ttk.Radiobutton(xy_frame, text="Портальная промежуточная", variable=frame, value=3, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=13, column=0, sticky="WNS")
 
 
     def fileinput():
@@ -369,15 +373,15 @@ def xy_properties(main):
         excel_filepath.insert(END, filename) # add this
 
 
-    label_excel = Label(xy_frame, text="Путь к EXCEL файлу", width=25, height=2, borderwidth=2, relief="groove",font=("bold", 11))
+    label_excel = ttk.Label(xy_frame, text="Путь к EXCEL файлу", width=25, anchor=CENTER, borderwidth=2, relief="groove")
     label_excel.grid(row=14, column=0, sticky="EWNS")
 
     main.excel_file_path = StringVar()
-    excel_filepath = Entry(xy_frame, width=5, textvariable=main.excel_file_path)
+    excel_filepath = ttk.Entry(xy_frame, width=5, textvariable=main.excel_file_path)
     main.all_entries.append(main.excel_file_path)
     excel_filepath.grid(row=14, column=1, sticky="EWNS")
 
-    select_button_excel = Button(xy_frame, text="Выбрать", command=fileinput)
+    select_button_excel = ttk.Button(xy_frame, text="Выбрать", command=fileinput, cursor='hand2')
     select_button_excel.grid(row=14, column=2, columnspan=2, sticky="EWNS")
 
     xy_frame.bind("<Configure>", resize_bg)
@@ -386,7 +390,9 @@ def xy_properties(main):
 
 main.image_set = False
 
-root = Tk()
+theme = 'breeze'
+
+root = ThemedTk(theme=theme)
 root.geometry("600x600+0+0")
 
 
@@ -401,13 +407,13 @@ inp_faza_razshep = BooleanVar()
 inp_type_razchep = IntVar()
 
 
-main_frame = Frame(root)
+main_frame = ttk.Frame(root)
 main_frame.rowconfigure(list(range(0,17)), weight=2)
 main_frame.columnconfigure(list(range(0,4)), weight=1)
 main_frame.columnconfigure(3, weight=0)
 
 
-xy_frame = Frame(root)
+xy_frame = ttk.Frame(root)
 xy_frame.rowconfigure(list(range(0,19)), weight=2)
 xy_frame.columnconfigure(list(range(1,4)), weight=1)
 xy_frame.columnconfigure(0, weight=2)
@@ -426,11 +432,12 @@ menubar.add_cascade(label="Входные данные", menu=filemenu)
 
 helpmenu = Menu(menubar, tearoff=0)
 helpmenu.add_command(label="Инструкция программы", command=help_func)
-helpmenu.add_command(label="Выйти из программы", command=root.destroy)
+helpmenu.add_command(label="Выйти из программы", command=on_closing)
 menubar.add_cascade(label="О программе", menu=helpmenu)
 
 root.config(menu=menubar)
 
+root.protocol("WM_DELETE_WINDOW", on_closing)
 
 for main_var, *rest in main.main_entry_list_names:
     exec(main_var + "=StringVar()")
