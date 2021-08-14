@@ -61,6 +61,9 @@
 
 ### Скриншоты интерфейса программы
 <br>
-![Screenshot3](/materials/Screenshot_3.jpeg)<br>
-![Screenshot4](/materials/Screenshot_4.jpeg)<br>
-![Screenshot5](/materials/Screenshot_5.jpeg)<br>
+
+![Screenshot3](/materials/Screenshot_3.jpeg) <br>
+
+![Screenshot4](/materials/Screenshot_4.jpeg) <br>
+
+![Screenshot5](/materials/Screenshot_5.jpeg) <br>
