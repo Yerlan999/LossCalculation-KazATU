@@ -77,7 +77,7 @@ class MainTrackerClass():
     list_of_frames = []
     current_frame = None
 
-    excel_file_path = None
+    # excel_file_path = StringVar()
 
     mirror_button = None
     mirror_state = 1
@@ -125,7 +125,6 @@ def help_func():
 
 
 def validate_numbers(index, numbers):
-    # print("Modification at index " + index)
     return globals()["pattern"].match(numbers) is not None
 
 def on_click(event):
@@ -165,7 +164,7 @@ def subbmit_values(MainTrackerClass):
 
         # Extracting and preprocessing user input
         try:
-            excel_filepath = MainTrackerClass.excel_file_path.get()
+            excel_filepath = excel_file_path.get()
             excel_filepath_os = Path(excel_filepath)
 
             name_podstans = MainTrackerClass.main_entry_list_vars[0].get().strip()
@@ -185,7 +184,8 @@ def subbmit_values(MainTrackerClass):
             if MainTrackerClass.edin_imzer_list_vars[2].get() == "В":
                 inp_napryazhen_linii = inp_napryazhen_linii/1000
 
-        except:
+        except Exception as error:
+            print(error)
             messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введенных данных воздушной линии")
             main_entry_list_vars = None
             return
@@ -200,7 +200,7 @@ def subbmit_values(MainTrackerClass):
             t1x, t1y, t2x, t2y, ax, ay, bx, by, cx, cy =  MainTrackerClass.xy_grid_list
             list_of_xys = [t1x, t1y, t2x, t2y, ax, ay, bx, by, cx, cy]
         getted_list_xys = list(map(lambda e: e.get(), list_of_xys))
-
+        print(getted_list_xys)
 
         try:
             floated_list_xys = list(map(lambda e: float(e), getted_list_xys))
@@ -276,8 +276,7 @@ def main_properties(main):
         MainTrackerClass.current_frame.pack_forget()
     MainTrackerClass.current_frame = main_frame
 
-
-    ttk.Label(main_frame, text="Общие данные линии", width=55, anchor=CENTER, borderwidth=2, relief="groove").grid(row=0, column=0, columnspan=4, sticky="EWNS")
+    ttk.Label(main_frame, text="Общие данные линии", width=55, anchor=CENTER, borderwidth=2, relief="groove", font=('Helvetica', 13)).grid(row=0, column=0, columnspan=4, sticky="EWNS")
 
     for i, (variable, label, var, ed_iz) in enumerate(MainTrackerClass.main_entry_list_names, start=1):
 
@@ -289,7 +288,8 @@ def main_properties(main):
             ttk.Label(main_frame, text=label, width=25, anchor=CENTER, borderwidth=2, relief="groove").grid(row=i, column=0, sticky="EWNS")
             eb=ttk.Entry(main_frame, width=40, textvariable=eval(variable)); eb.grid(row=i, column=1, columnspan=2, sticky="EWNS")
             MainTrackerClass.all_entries.append(eb)
-            eb.insert(0, 'Каждую через ","')
+            if not eb.get():
+                eb.insert(0, 'Каждую через ","')
             eb.bind('<Button-1>', on_click)
             on_click_id = eb.bind('<Button-1>', on_click)
         elif ed_iz:
@@ -303,7 +303,7 @@ def main_properties(main):
             MainTrackerClass.all_entries.append(e)
 
 
-    ttk.Label(main_frame, text="Характеристика проводов", width=55, anchor=CENTER, borderwidth=2, relief="groove").grid(row=10, column=0, columnspan=4, sticky="EWNS")
+    ttk.Label(main_frame, text="Характеристика проводов", width=55, anchor=CENTER, borderwidth=2, relief="groove", font=('Helvetica', 13)).grid(row=10, column=0, columnspan=4, sticky="EWNS")
 
     for i, mat_lab in enumerate(MainTrackerClass.mat_props, start=12):
         ttk.Label(main_frame, text=mat_lab, width=15, anchor=CENTER, borderwidth=2, relief="groove").grid(row=i, column=0, sticky="EWNS")
@@ -335,7 +335,7 @@ def resource_path(relative_path):
 
 
 def draw_picture(canvas):
-    global image_set, mirror_button
+    global image_set, mirror_button, previous_image
     canvas.delete("all")
 
     MainTrackerClass.image_set = True
@@ -370,20 +370,23 @@ def draw_picture(canvas):
 
 
     # XY ENTRIES
-    for xy_curr_entries in MainTrackerClass.xy_grid_list:
-        if xy_curr_entries:
-            xy_curr_entries.destroy()
-    MainTrackerClass.xy_grid_list = []
+    if previous_image != MainTrackerClass.current_image:
 
-    for i, rope in enumerate(MainTrackerClass.xyframe_label_dict[frame.get()], start=2):
-        for j, xy in enumerate(MainTrackerClass.xy_headers, start=2):
-            inp_var = (rope+xy).lower()
-            exec(inp_var + "=StringVar()")
-            MainTrackerClass.xy_var_list.append(eval(inp_var))
-            xye=ttk.Entry(xy_frame, textvariable=eval(inp_var), width=1, validate="key", validatecommand=vcmd); xye.grid(row=i, column=j, sticky="EWNS")
-            MainTrackerClass.xy_grid_list.append(xye)
+        for xy_curr_entries in MainTrackerClass.xy_grid_list:
+            if xy_curr_entries:
+                xy_curr_entries.destroy()
+        MainTrackerClass.xy_grid_list = []
+
+        for i, rope in enumerate(MainTrackerClass.xyframe_label_dict[frame.get()], start=2):
+            for j, xy in enumerate(MainTrackerClass.xy_headers, start=2):
+                inp_var = (rope+xy).lower()
+                exec(inp_var + "=StringVar()")
+                MainTrackerClass.xy_var_list.append(eval(inp_var))
+                xye=ttk.Entry(xy_frame, textvariable=eval(inp_var), width=1, validate="key", validatecommand=vcmd); xye.grid(row=i, column=j, sticky="EWNS")
+                MainTrackerClass.xy_grid_list.append(xye)
 
 
+    previous_image = MainTrackerClass.current_image
 
     xy_frame.mainloop()
 
@@ -407,9 +410,11 @@ def xy_properties(main):
     MainTrackerClass.current_frame = xy_frame
 
 
-    ttk.Label(xy_frame, text="Характеристика опор", width=75, anchor=CENTER, borderwidth=2, relief="groove").grid(row=0, column=0, columnspan=4, sticky="EWNS")
-    canvas = Canvas(xy_frame, width = 281, height = 313, bg='white')
-    canvas.grid(row=1, rowspan=9, column=0, sticky="EWNS")
+    ttk.Label(xy_frame, text="Характеристика опор", width=75, anchor=CENTER, borderwidth=2, relief="groove", font=('Helvetica', 13)).grid(row=0, column=0, columnspan=4, sticky="EWNS")
+
+    if not frame.get():
+        canvas = Canvas(xy_frame, width = 281, height = 313, bg='white')
+        canvas.grid(row=1, rowspan=9, column=0, sticky="EWNS")
 
     MainTrackerClass.mirror_button = ttk.Button(xy_frame, text="<>", command=lambda:mirror_picture(canvas), cursor='hand2')
     MainTrackerClass.mirror_button.grid(row=9, column=0, sticky="SE")
@@ -441,18 +446,17 @@ def xy_properties(main):
     ttk.Radiobutton(xy_frame, text="Двухцепная промежуточная", variable=frame, value=2, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=12, column=0, sticky="WNS")
     ttk.Radiobutton(xy_frame, text="Портальная промежуточная", variable=frame, value=3, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=13, column=0, sticky="WNS")
 
-
     def fileinput():
         filename = filedialog.askopenfilename(filetypes=[("Файлы EXCEL", ".xlsx .xls"), ("Все файлы","*.*")])
-        excel_filepath.insert(END, filename) # add this
+        excel_filepath.insert(END, filename)
 
 
     label_excel = ttk.Label(xy_frame, text="Путь к EXCEL файлу", width=25, anchor=CENTER, borderwidth=2, relief="groove")
     label_excel.grid(row=14, column=0, sticky="EWNS")
 
-    MainTrackerClass.excel_file_path = StringVar()
-    excel_filepath = ttk.Entry(xy_frame, width=5, textvariable=MainTrackerClass.excel_file_path)
-    MainTrackerClass.all_entries.append(MainTrackerClass.excel_file_path)
+    # MainTrackerClass.excel_file_path = StringVar()
+    excel_filepath = ttk.Entry(xy_frame, width=5, textvariable=excel_file_path)
+    MainTrackerClass.all_entries.append(excel_filepath)
     excel_filepath.grid(row=14, column=1, sticky="EWNS")
 
     select_button_excel = ttk.Button(xy_frame, text="Выбрать", command=fileinput, cursor='hand2')
@@ -471,12 +475,13 @@ root.geometry("600x600+0+0")
 
 
 pattern = re.compile(r'^([\.\d]*)$')
-# globals()["pattern"] = pattern
 vcmd = (root.register(validate_numbers), "%i", "%P")
 
 
 
-frame = IntVar()
+frame = IntVar(); frame.set(0)
+previous_image = frame.get()
+
 inp_faza_razshep = BooleanVar()
 inp_type_razchep = IntVar()
 
@@ -528,6 +533,8 @@ for provod in MainTrackerClass.types_cables:
     for character in MainTrackerClass.mater_charac:
         exec(provod+character + "=StringVar()")
         MainTrackerClass.mat_var_list.append(eval(provod+character))
+
+excel_file_path = StringVar()
 
 root.mainloop()
 
