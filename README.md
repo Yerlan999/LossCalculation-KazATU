@@ -1,3 +1,6 @@
+# Active power loss on overhead power line based on its phases layout and non-sinusoidal oscillation in higher harmonics
+<br>
+
 # Программа расчета добавочных потерь *(в процессе разработки)*
 <br>
 
