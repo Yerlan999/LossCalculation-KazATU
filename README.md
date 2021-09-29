@@ -58,7 +58,6 @@
 
 Коды *интерфейса программы* представлены в файлах:
 1. [main.py](https://github.com/Yerlan999/LossCalculation-KazATU/blob/main/modules/main.py)
-2. [main2.py](https://github.com/Yerlan999/LossCalculation-KazATU/blob/main/modules/main2.py)
 
 <br>
 

@@ -4,8 +4,8 @@ from pathlib import Path
 block_cipher = None
 
 
-a = Analysis(['main2.py'],
-             pathex=[Path('C:/Users/Sony/Desktop/University/LossCalculation-KazATU/main2.py')],
+a = Analysis(['main.py'],
+             pathex=[Path('C:/Users/Sony/Desktop/University/LossCalculation-KazATU/main.py')],
              binaries=[],
              datas=[],
              hiddenimports=[],
