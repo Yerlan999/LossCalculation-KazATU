@@ -129,10 +129,8 @@ class Rachety():
     # активного сопротивления для каждой гармоники
     def pogon_aktiv_soprotiv(self, fazy, garmoniki):
 
-        #Matritsa_Pog_Soprot = list()
         matritsa = list()
         for faza in fazy.spisok_provodov:
-            #print(faza.name)
             Ri = (math.sqrt(faza.poper_sechenie/math.pi))/1000
             Roi = 1000/(faza.gamma*faza.poper_sechenie)
             znach_pog_soprot = list()
@@ -140,15 +138,12 @@ class Rachety():
             for garmonika in garmoniki:
                 Xwi = (Ri/2) * math.sqrt((garmonika * faza.gamma * faza.magnit_pronitsaemost)/2)
                 if Xwi <= 1:
-                    # print("Case 1")
                     Rpi = Roi * (1 + math.pow(Xwi, 4/3))
                     znach_pog_soprot.append(Rpi)
                 elif Xwi > 1 and Xwi < 30:
-                    # print("Case 2")
                     Rpi = Roi * (Xwi + 0.25 + (3/64 * Xwi))
                     znach_pog_soprot.append(Rpi)
                 else:
-                    # print("Case 3")
                     Rpi = Roi * (Xwi + 0.265)
                     znach_pog_soprot.append(Rpi)
 
@@ -448,7 +443,7 @@ class PhaseHolder():
             phase_df = phase_df.iloc[int(len(phase_df.index)/2):,:]
         for i, (a, p) in enumerate(pairwise_2(range(all_columns)), start=2): # Начало 2 !!!
             if i == har:
-                A = phase_df.iloc[:,a].reset_index(drop=True) * self.add_df.iloc[:,check_dict[iu]].reset_index(drop=True)
+                A = phase_df.iloc[:,a].reset_index(drop=True) * self.add_df.iloc[:,check_dict[iu]].reset_index(drop=True)/100
                 P = phase_df.iloc[:,p].reset_index(drop=True); Pn = P.apply(lambda entry: np.sin(entry*np.pi/180))
 
                 SIN = A * Pn
@@ -468,7 +463,7 @@ class PhaseHolder():
         if iu == 'i':
             phase_df = phase_df.iloc[int(len(phase_df.index)/2):,:]
         for a, p in pairwise_2(range(all_columns)):
-            A = phase_df.iloc[:,a].reset_index(drop=True) * self.add_df.iloc[:,check_dict[iu]].reset_index(drop=True)
+            A = phase_df.iloc[:,a].reset_index(drop=True) * self.add_df.iloc[:,check_dict[iu]].reset_index(drop=True)/100
             P = phase_df.iloc[:,p].reset_index(drop=True); Pn = P.apply(lambda entry: np.sin(entry*np.pi/180))
 
             if type(SIN)==type(None):
