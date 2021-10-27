@@ -36,7 +36,7 @@ class System():
         self.naimen_podstan = naimen_podstan
         self.naimen_prisoedin = naimen_prisoedin
         self.kol_prisoedin = kol_prisoedin
-        self. dlina_linii =  dlina_linii
+        self.dlina_linii =  dlina_linii
         self.kol_provodov = kol_provodov
         self.kol_izmeren = kol_izmeren
         self.interval = interval
@@ -44,25 +44,25 @@ class System():
         self.rassheplena = rassheplena
         self.prav_treugolnik = prav_treugolnik
 
-    def line_matrix(self):
+    def line_matrix(self, pris_num=1):
+        assert type(pris_num) == int, "Must be integer"
 
         UM, FUM, AIM, FIM = [], [], [], []
         AU, PU, AI, PI = [], [], [], []
         THD_U, THD_I, RMSU, RMSI = [], [], [], []
 
-        for att_name, obj in self.podstans_object.prisoed_1.__dict__.items():
+        for att_name, obj in getattr(self.podstans_object, "prisoed_"+str(pris_num)).__dict__.items():
             if att_name.startswith("faza_") and type(obj.df) != type(None):
-                faza_x = getattr(self.podstans_object.prisoed_1, att_name)
+                faza_x = getattr(getattr(self.podstans_object, "prisoed_"+str(pris_num)), att_name)
                 um, fum, aim, fim = faza_x.get_harmonic()
                 au, pu, ai, pi = faza_x.get_main_harm()
                 thd_u, thd_i, rmsu, rmsi = faza_x.get_rms()
-
                 UM.append(um); FUM.append(fum); AIM.append(aim); FIM.append(fim);
                 AU.append(au); PU.append(pu); AI.append(ai); PI.append(pi);
                 THD_U.append(thd_u); THD_I.append(thd_i); RMSU.append(rmsu); RMSI.append(rmsi);
 
-        # Returns 3 dimensional matrix [phase, harmonics, timeindex] or 2 dim-al [phase, timeindex]
-        return np.array(UM), np.array(FUM), np.array(AIM), np.array(FIM), np.array(AU), np.array(PU), np.array(AI), np.array(PI), np.array(THD_U), np.array(THD_I), np.array(RMSU), np.array(RMSI)
+        # Returns 3 dimensional matrix [timeindex, harmonics, phase] or 2 dim-al [timeindex, phase]
+        return np.swapaxes(np.array(UM),0,2), np.swapaxes(np.array(FUM),0,2), np.swapaxes(np.array(AIM),0,2), np.swapaxes(np.array(FIM),0,2), np.swapaxes(np.array(AU),0,1), np.swapaxes(np.array(PU),0,1), np.swapaxes(np.array(AI),0,1), np.swapaxes(np.array(PI),0,1), np.swapaxes(np.array(THD_U),0,1), np.swapaxes(np.array(THD_I),0,1), np.swapaxes(np.array(RMSU),0,1), np.swapaxes(np.array(RMSI),0,1)
 
     def line_matrixWithPrisoed(self):
 
@@ -87,9 +87,9 @@ class System():
                         iAU.append(au); iPU.append(pu); iAI.append(ai); iPI.append(pi);
                         iTHD_U.append(thd_u); iTHD_I.append(thd_i); iRMSU.append(rmsu); iRMSI.append(rmsi);
 
-                pUM.append(iUM); pFUM.append(iFUM); pAIM.append(iAIM); pFIM.append(iFIM);
-                pAU.append(iAU); pPU.append(iPU); pAI.append(iAI); pPI.append(iPI);
-                pTHD_U.append(iTHD_U); pTHD_I.append(iTHD_I); pRMSU.append(iRMSU); pRMSI.append(iRMSI);
+                pUM.append(np.array(iUM)); pFUM.append(np.array(iFUM)); pAIM.append(np.array(iAIM)); pFIM.append(np.array(iFIM));
+                pAU.append(np.array(iAU)); pPU.append(np.array(iPU)); pAI.append(np.array(iAI)); pPI.append(np.array(iPI));
+                pTHD_U.append(np.array(iTHD_U)); pTHD_I.append(np.array(iTHD_I)); pRMSU.append(np.array(iRMSU)); pRMSI.append(np.array(iRMSI));
 
         return pUM, pFUM, pAIM, pFIM, pAU, pPU, pAI, pPI, pTHD_U, pTHD_I, pRMSU, pRMSI
 
