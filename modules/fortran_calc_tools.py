@@ -681,8 +681,184 @@ class PodStans():
 
 
 
+# Implementing RASCHET fortran's subroutine in python
+def RASCHET():
+    global UK1,AIK1,k,n,PPP,PP1,PP2,ppp1,ppp2,ppp3,ppp4,ppp5,ppp6,ppp7,ppp8, MM,M,M1,MT,M10,M20,PR,K1,K2,K3,N1,N2,N3,MPR,MTR,MMT
 
 
+# Implementing other FORTRAN's subroutines
+def DLINRG(N, A, LDA, AINV, LDAINV):
+    """
+    Computes the inverse of a real general matrix.
+
+        N - order of the matrix (rows x columns). (Input)
+        A - N by N matrix containing the matrix to be inverted. (Input)
+        DA — Leading dimension of A exactly as specified in the dimension statement of the calling program. (Input)
+        AINV — N by N matrix containing the inverse of A. (Output)
+        If A is not needed, A and AINV can share the same storage locations.
+        LDAINV — Leading dimension of AINV exactly as specified in the dimension statement of the calling program. (Input)
+    """
+    return np.linalg.inv(A)
+
+
+def DMRRRR(NRA, NCA, A, LDA, NRB, NCB, B, LDB, NRC, NCC, C, LDC):
+    """
+    Multiply two real rectangular matrices, AB.
+
+        NRA — Number of rows of A.   (Input)
+        NCA — Number of columns of A.   (Input)
+        A — Real NRA by NCA matrix in full storage mode.   (Input)
+        LDA — Leading dimension of A exactly as specified in the dimension statement of the calling program.   (Input)
+        NRB — Number of rows of B.   (Input)
+        NRB must be equal to NCA.
+        NCB — Number of columns of B.   (Input)
+        B — Real NRB by NCB matrix in full storage mode.   (Input)
+        LDB — Leading dimension of B exactly as specified in the dimension statement of the calling program.   (Input)
+        NRC — Number of rows of C.   (Input)
+        NRC must be equal to NRA.
+        NCC — Number of columns of C.   (Input)
+        NCC must be equal to NCB.
+        C — Real NRC by NCC matrix containing the product AB in full storage mode.   (Output)
+        LDC — Leading dimension of C exactly as specified in the dimension statement of the calling program.   (Input)
+    """
+    return np.matmul(A, B)
+
+
+def DMCRCR(NRA, NCA, A, LDA, NRB, NCB, B, LDB, NRC, NCC, C, LDC):
+    """
+    Multiply two complex rectangular matrices, AB.
+
+        NRA — Number of rows of A.   (Input)
+        NCA — Number of columns of A.   (Input)
+        A — Complex NRA by NCA rectangular matrix.   (Input)
+        LDA — Leading dimension of A exactly as specified in the dimension statement of the calling program.   (Input)
+        NRB — Number of rows of B.   (Input)
+        NRB must be equal to NCA.
+        NCB — Number of columns of B.   (Input)
+        B — Complex NRB by NCB rectangular matrix.   (Input)
+        LDB — Leading dimension of B exactly as specified in the dimension statement of the calling program.   (Input)
+        NRC — Number of rows of C.   (Input)
+        NRC must be equal to NRA.
+        NCC — Number of columns of C.   (Input)
+        NCC must be equal to NCB.
+        C — Complex NRC by NCC rectangular matrix containing the product A * B.   (Output)
+        LDC — Leading dimension of C exactly as specified in the dimension statement of the calling program.   (Input)
+    """
+    return np.matmul(A, B)
+
+
+def DEVLCG(N, A, LDA, EVAL):
+    """
+    Compute all of the eigenvalues of a complex matrix.
+
+        N — Order of the matrix A.   (Input)
+        A — Complex matrix of order N.   (Input)
+        LDA — Leading dimension of A exactly as specified in the dimension statement in the calling program.   (Input)
+        EVAL —  Complex vector of length N containing the eigenvalues of A in decreasing order of magnitude.   (Output)
+    """
+    return LA.eigvals(A)
+
+
+def DLFTCG(N, A, LDA, FAC, LDFAC, IPVT):
+    """
+    Compute the LU factorization of a complex general matrix.
+
+        N — Order of the matrix.   (Input)
+        A — Complex N by N matrix to be factored.   (Input)
+        LDA — Leading dimension of A exactly as specified in the dimension statement of the calling program.   (Input)
+        FAC — Complex N by N matrix containing the LU factorization of the matrix A.   (Output)
+        If A is not needed, A and FAC can share the same storage locations.
+        LDFAC — Leading dimension of FAC exactly as specified in the dimension statement of the calling program.   (Input)
+        IPVT — Vector of length N containing the pivoting information for the LU factorization.   (Output)
+    """
+    return lu_factor(A)
+
+
+def LFSCG(N, FAC, LDFAC, IPVT, B, IPATH, X):
+    """
+     Solve a complex general system of linear equations given the LU factorization of the coefficient matrix.
+
+        N — Number of equations.   (Input)
+        FAC — Complex N by N matrix containing the LU factorization of the coefficient matrix A as output from routine LFCCG/DLFCCG or LFTCG/DLFTCG.   (Input)
+        LDFAC — Leading dimension of FAC exactly as specified in the dimension statement of the calling program.   (Input)
+        IPVT — Vector of length N containing the pivoting information for the LU factorization of A as output from routine LFCCG/DLFCCG or LFTCG/DLFTCG.   (Input)
+        B — Complex vector of length N containing the right-hand side of the linear system.   (Input)
+        IPATH — Path indicator.   (Input)
+        IPATH = 1 means the system AX = B is solved.
+        IPATH = 2 means the system AHX = B is solved.
+        X — Complex vector of length N containing the solution to the linear system.   (Output)
+        If B is not needed, B and X can share the same storage locations.
+    """
+    return lu_solve((FAC, IPVT), B)
+
+
+def DLFDCG(A, N, FAC, LDFAC, IPVT, DET1, DET2):
+    """ !!! EXCEPTION ACCEPT ONLY A !!!
+    Compute the determinant of a complex general matrix given the LU factorization of the matrix.
+
+        N — Order of the matrix.   (Input)
+        FAC — Complex N by N matrix containing the LU factorization of the matrix A as output from routine LFTCG/DLFTCG or LFCCG/DLFCCG.   (Input)
+        LDFAC — Leading dimension of FAC exactly as specified in the dimension statement of the calling program.   (Input)
+        IPVT — Vector of length N containing the pivoting information for the LU factorization as output from routine LFTCG/DLFTCG or LFCCG/DLFCCG.   (Input)
+        DET1 — Complex scalar containing the mantissa of the determinant.   (Output)
+        The value DET1 is normalized so that 1.0 £ |DET1| < 10.0 or DET1 = 0.0.
+        DET2 — Scalar containing the exponent of the determinant.   (Output)
+        The determinant is returned in the form det(A) = DET1 * 10DET2.
+    """
+    return np.linalg.det(A)
+
+
+def DLINCG(N, A, LDA, AINV, LDAINV):
+    """ !!! SCALE FIRST TO 1/N !!!
+    Compute the inverse of a complex general matrix.
+
+        N — Order of the matrix A.   (Input)
+        A — Complex N by N matrix containing the matrix to be inverted.   (Input)
+        LDA — Leading dimension of A exactly as specified in the dimension statement of the calling program.   (Input)
+        AINV — Complex N by N matrix containing the inverse of A.   (Output)
+        If A is not needed, A and AINV can share the same storage locations.
+        LDAINV — Leading dimension of AINV exactly as specified in the dimension statement of the calling program.   (Input)
+    """
+    if N:
+        A = A*1/N
+    return np.linalg.inv(A)
+
+
+def DMUCRV(NRA, NCA, A, LDA, NX, X, IPATH, NY, Y):
+    """
+    Multiply a complex rectangular matrix by a complex vector.
+
+        NRA — Number of rows of A.   (Input)
+        NCA — Number of columns of A.   (Input)
+        A — Complex NRA by NCA rectangular matrix.   (Input)
+        LDA — Leading dimension of A exactly as specified in the dimension statement of the calling program.   (Input)
+        NX — Length of the vector X.   (Input)
+        NX must be equal to NCA if IPATH is equal to 1. NX must be equal to NRA if IPATH is equal to 2.
+        X — Complex vector of length NX.   (Input)
+        IPATH — Integer flag.   (Input)
+        IPATH = 1 means the product Y = A * X is computed. IPATH = 2 means the product Y = trans(A) * X is computed, where trans(A) is the transpose of A.
+        NY — Length of the vector Y.   (Input)
+        NY must be equal to NRA if IPATH is equal to 1. NY must be equal to NCA if IPATH is equal to 2.
+        Y — Complex vector of length NY containing the product A * X if IPATH is equal to 1 and the product trans(A) * X if IPATH is equal to 2.   (Output)
+    """
+    return np.matmul(A, X)
+
+
+def DLSLCG(N, A, LDA, B, IPATH, X):
+    """
+    Solve a complex general system of linear equations without iterative refinement.
+
+        N — Number of equations.   (Input)
+        A — Complex N by N matrix containing the coefficients of the linear system.   (Input)
+        LDA — Leading dimension of A exactly as specified in the dimension statement of the calling program.   (Input)
+        B — Complex vector of length N containing the right-hand side of the linear system.   (Input)
+        IPATH — Path indicator.   (Input)
+        IPATH = 1 means the system AX = B is solved.
+        IPATH = 2 means the system AHX = B is solved.
+        X — Complex vector of length N containing the solution to the linear system.   (Output)
+        If B is not needed, B and X can share the same storage locations.
+    """
+    return np.linalg.inv(A).dot(X)
 
 
 # Au = np.matmul(Z, Y)
