@@ -1,8 +1,8 @@
 from time import sleep
 
 
+k = 0
 n = 0
-i = 0
 il = ["a", "b", "c", "d"]
 
 
@@ -10,8 +10,8 @@ next_outer = False
 
 update_inner = True
 
-inner_loop = 10 # i
-outer_loop = 4 # n
+inner_loop = 50 # k
+outer_loop = 560 # n
 PR = 0
 
 
@@ -19,18 +19,19 @@ while True:
 
     PR += 1
 
-    if i == outer_loop:
+    if k == outer_loop:
         break
 
-    print("Outer,  Inner, PR: ", il[i], n, PR, update_inner)
+    print("Outer,  Inner, PR: ", n, k, PR, update_inner)
 
-    [block-1]
+    # [block-1]
 
-    if (i > 0) or (i == 0 and PR ==2):
+    if (k > 0) or (k == 0 and PR ==2):
+        pass
 
-        [block-2]
+        # [block-2]
 
-    [block-3]
+    # [block-3]
 
     if update_inner:
 
@@ -42,12 +43,12 @@ while True:
             next_outer = True
 
     if next_outer:
-        if i < outer_loop:
-            i += 1
+        if k < outer_loop:
+            k += 1
         else:
-            i = 0
+            k = 0
 
-    if i == 0 and PR == 1:
+    if k == 0 and PR == 1:
         update_inner = False  # ---> 1700
         continue
     if PR == 2:
@@ -56,4 +57,4 @@ while True:
         continue
 
 
-    sleep(1)
+    # sleep(1)
