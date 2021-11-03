@@ -1,0 +1,24 @@
+    DO 307 J=1,M20
+
+        IF (IH(J).EQ.1):
+            K1=K1+1
+        IF (IH(J).EQ.0):
+            GOTO 309
+
+        DO 308 I=1,M10
+            GG4(I,K1)=-GG3(I,J)
+            B10(K1)=B5(J)
+      308   CONTINUE
+
+        GOTO 307
+      309   CONTINUE
+
+        IF (IH(J).EQ.0):
+            K0=K0+1
+        IF (IH(J).EQ.1):
+            GOTO 307
+
+        DO 310 I=1,M10
+            GG5(I,K0)=GG3(I,J)
+      310   CONTINUE
+  307   CONTINUE
