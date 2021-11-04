@@ -1,279 +1,302 @@
-    DO 8401 N=1,2
-        IF (N.EQ.1) SA=-1.
-        IF (N.EQ.2) SA=1.
+    for n in range(2):
+        if n == 1:
+            SA=-1
+        if n == 2:
+            SA=1
 
-        DO 81011 II=1,M
-            DO 81011 JJ=1,M
-                LI1(II,JJ)=SA*MMT*LI(II,JJ)
+        for ii in range(M):
+            for jj in range(M):
+                LI1[ii,jj]=SA*MMT*LI[ii,jj]
 
-        CALL DEVLCG(M,LI1,M,EVI)
+        EVI = DEVLCG(M,LI1,M,EVI)
 
-        DO 8220 I=1,M
-            DO 8220 J=1,M
-                F(I,J)=EVI(I)**(J-1)
+        for i in range(M):
+            for j in range(M):
+                F[i,j]=EVI[i]**(J) # J-1 in original
 
-        DO 82201 II=1,M
-           DO 82201 JJ=1,M
-                F1(II,JJ)=F(II,JJ)
+        for ii in range(M):
+            for jj in range(M):
+                F1[ii,jj]=F[ii,jj]
 
-        DO 8334 II=1,M1
-            DO 8334 JJ=1,M1
-                A1(II,JJ)=F(II,JJ)
+        for ii in range(M1):
+            for jj in range(M1):
+                A1[ii,jj]=F[ii,jj]
 
-        CALL DLFTCG(M1,A1,M1,A2,M1,IPVT1)
-        CALL DLFDCG(M1,A2,M1,IPVT1,DET10,DET20)
+        A2 = DLFTCG(M1,A1,M1,A2,M1,IPVT1)
+        DET10 = DLFDCG(M1,A2,M1,IPVT1); DET20 = 1
 
-        DO 8221 J=1,M
-            DO 82211 II=1,M
-                DO 82211 JJ=1,M
-                    F(II,JJ)=F1(II,JJ)
+        for j in range(M):
+            for ii in range(M):
+                for jj in range(M):
+                    F[Iii,jj]=F1[ii,jj]
 
-            DO 8222 I=1,M
-                F(I,J)=EX1**EVI(I)
+            for i in range(M):
+                F[i,j]=EX1**EVI[i]
 
-            DO 8335 II=1,M1
-                DO 8335 JJ=1,M1
-                    A1(II,JJ)=F(II,JJ)
+            for ii in range(M1):
+                for jj in range(M1):
+                    A1[ii,jj]=F[ii,jj]
 
-            CALL DLFTCG(M1,A1,M1,A2,M1,IPVT1)
-            CALL DLFDCG(M1,A2,M1,IPVT1,DET1(J),DET2(J))
+            A2 = DLFTCG(M1,A1,M1,A2,M1,IPVT1)
+            DET1[j] = DLFDCG(M1,A2,M1,IPVT1); DET2[j] = 1
 
 
-        CALL DMCRCR(M,M,LI1, M,M,M,LI1,M,M,M,F2,M)
-        CALL DMCRCR(M,M,F2,M,M,M,LI1,M,M,M,F3,M)
-        CALL DMCRCR(M,M,F3,M,M,M,LI1,M,M,M,F4,M)
-        CALL DMCRCR(M,M,F4,M,M,M,LI1,M,M,M,F5,M)
-        CALL DMCRCR(M,M,F5,M,M,M,LI1,M,M,M,F6,M)
-        CALL DMCRCR(M,M,F6,M,M,M,LI1,M,M,M,F7,M)
+        F2 = DMCRCR(M,M,LI1, M,M,M,LI1,M,M,M,F2,M)
+        F3 = DMCRCR(M,M,F2,M,M,M,LI1,M,M,M,F3,M)
+        F4 = DMCRCR(M,M,F3,M,M,M,LI1,M,M,M,F4,M)
+        F5 = DMCRCR(M,M,F4,M,M,M,LI1,M,M,M,F5,M)
+        F6 = DMCRCR(M,M,F5,M,M,M,LI1,M,M,M,F6,M)
+        F7 = DMCRCR(M,M,F6,M,M,M,LI1,M,M,M,F7,M)
 
-        DO 8440 I=1,M1
-            DO 8440 II=1,M
-                DO 8440 JJ=1,M
+        for i in range(M1):
+            for ii in range(M):
+                for jj in range(M):
                     if i == 1:
-                        AG[1,ii,jj]=E(II,JJ)
+                        AG[1,ii,jj]=E[ii,jj]
                     if i == 2:
-                        AG[2,ii,jj]=LI1(II,JJ)
+                        AG[2,ii,jj]=LI1[ii,jj]
                     if i == 3:
-                        AG[3,ii,jj]=F2(II,JJ)
+                        AG[3,ii,jj]=F2[ii,jj]
                     if i == 4:
-                        AG[4,ii,jj]=F3(II,JJ)
+                        AG[4,ii,jj]=F3[ii,jj]
                     if i == 5:
-                        AG[5,ii,jj]=F4(II,JJ)
+                        AG[5,ii,jj]=F4[ii,jj]
                     if i == 6:
-                        AG[6,ii,jj]=F5(II,JJ)
+                        AG[6,ii,jj]=F5[ii,jj]
                     if i == 7:
-                        AG[7,ii,jj]=F6(II,JJ)
+                        AG[7,ii,jj]=F6[ii,jj]
                     if i == 8:
-                        AG[8,ii,jj]=F7(II,JJ)
+                        AG[8,ii,jj]=F7[ii,jj]
 
-        DO 8445 II=1,M
-            DO 8445 JJ=1,M
-                LI2(II,JJ)=0
+        for ii in range(M):
+            for jj in range(M):
+                LI2[ii,jj]=0
 
-        DO 8444 I=1,M1
-            DO 8444 II=1,M
-                DO 8444 JJ=1,M
-                    LI2(II,JJ)=LI2(II,JJ)+(DET1(I)*(10**DET2(I))*AG(I,II,JJ))/(DET10*(10**DET20))
+        for i in range(M1):
+            for ii in range(M):
+                for jj in range(M):
+                    LI2[ii,jj]=LI2[ii,jj]+(DET1[i]*(10**DET2[i])*AG[i,ii,jj])/(DET10*(10**DET20))
 
         if n == 2:
             continue
         else:
-            DO 82412 II=1,M
-                DO 82412 JJ=1,M
-                    LI3(II,JJ)=LI2(II,JJ)
+            for ii in range(M):
+                for jj in range(M):
+                    LI3[ii,jj]=LI2[ii,jj]
 
 
-    CALL DMCRCR(M,M,LI3, M,M,M,LI2,M,M,M,F2,M)
+    F2 = DMCRCR(M,M,LI3, M,M,M,LI2,M,M,M,F2,M)
 
-    DO 102 I=1,M20
-        DO 102 J=1,M20
-            GG(I,J)=0.
-            GG1(I,J)=0.
-            GG2(I,J)=0.
+    for i in range(M20):
+        for j in range(M20):
+            GG[i,j]=0.
+            GG1[i,j]=0.
+            GG2[i,j]=0.
 
-    DO 103 I=1,M
-        GG(I,I)=1.
-        GG(I,I+M)=1.
-        GG(I+M,I+2*M)=1.
-        GG(I+M,I+3*M)=1.
-        GG1(I,I)=1.
-        GG1(I,I+M)=1.
-        GG1(I+M,I+2*M)=1.
-        GG1(I+M,I+3*M)=1.
+    for i in range(M):
+        GG[i,i]=1.
+        GG[i,i+M]=1.
+        GG[i+M,i+2*M]=1.
+        GG[i+M,i+3*M]=1.
+        GG1[i,i]=1.
+        GG1[i,i+M]=1.
+        GG1[i+M,i+2*M]=1.
+        GG1[i+M,i+3*M]=1.
 
-    DO 104 I=1,M
-        DO 104 J=1,M
-            GG(I+2*M,J)=-LU(I,J)
-            GG(I+2*M,J+M)=LU(I,J)
-            GG(I+3*M,J+2*M)=-LI(I,J)
-            GG(I+3*M,J+3*M)=+LI(I,J)
-            GG1(I+2*M,J)=LU3(I,J)
-            GG1(I+2*M,J+M)=LU2(I,J)
-            GG1(I+3*M,J+2*M)=LI3(I,J)
-            GG1(I+3*M,J+3*M)=LI2(I,J)
+    for i in range(M):
+        for j in range(M):
+            GG[i+2*M,j]=-LU[i,j]
+            GG[i+2*M,j+M]=LU[i,j]
+            GG[i+3*M,j+2*M]=-LI[i,j]
+            GG[i+3*M,j+3*M]=+LI[i,j]
+            GG1[i+2*M,j]=LU3[i,j]
+            GG1[i+2*M,j+M]=LU2[i,j]
+            GG1[i+3*M,j+2*M]=LI3[i,j]
+            GG1[i+3*M,j+3*M]=LI2[i,j]
 
-    CALL DLINCG (M20,GG1,M20,GG2,M20)
+    GG2 = DLINCG (M20,GG1,M20,GG2,M20) # Look for M20
 
-    DO 316 I=1,M
-        DO 316 J=1,M
-            HH11(I,J)=GG2(I,J)
-            HH12(I,J)=GG2(I,J+M)
-            HH13(I,J)=GG2(I,J+2*M)
-            HH14(I,J)=GG2(I,J+3*M)
-            HH21(I,J)=GG2(I+M,J)
-            HH22(I,J)=GG2(I+M,J+M)
-            HH23(I,J)=GG2(I+M,J+2*M)
-            HH24(I,J)=GG2(I+M,J+3*M)
-            HH31(I,J)=GG2(I+2*M,J)
-            HH32(I,J)=GG2(I+2*M,J+M)
-            HH33(I,J)=GG2(I+2*M,J+2*M)
-            HH34(I,J)=GG2(I+2*M,J+3*M)
-            HH41(I,J)=GG2(I+3*M,J)
-            HH42(I,J)=GG2(I+3*M,J+M)
-            HH43(I,J)=GG2(I+3*M,J+2*M)
-            HH44(I,J)=GG2(I+3*M,J+3*M)
+    for i in range(M):
+        for j in range(M):
+            HH11[i,j]=GG2[i,j]
+            HH12[i,j]=GG2[i,j+M]
+            HH13[i,j]=GG2[i,j+2*M]
+            HH14[i,j]=GG2[i,j+3*M]
+            HH21[i,j]=GG2[i+M,j]
+            HH22[i,j]=GG2[i+M,j+M]
+            HH23[i,j]=GG2[i+M,j+2*M]
+            HH24[i,j]=GG2[i+M,j+3*M]
+            HH31[i,j]=GG2[i+2*M,j]
+            HH32[i,j]=GG2[i+2*M,j+M]
+            HH33[i,j]=GG2[i+2*M,j+2*M]
+            HH34[i,j]=GG2[i+2*M,j+3*M]
+            HH41[i,j]=GG2[i+3*M,j]
+            HH42[i,j]=GG2[i+3*M,j+M]
+            HH43[i,j]=GG2[i+3*M,j+2*M]
+            HH44[i,j]=GG2[i+3*M,j+3*M]
 
-    CALL DMCRCR (M,M,LU3,M,M,M,HH11,M,M,M,F,M)
-    CALL DMCRCR (M,M,LU,M,M,M,F,M,M,M,HH11,M)
-    CALL DMCRCR (M,M,LU2,M,M,M,HH21,M,M,M,F,M)
-    CALL DMCRCR (M,M,LU,M,M,M,F,M,M,M,HH21,M)
-    CALL DMCRCR (M,M,LU3,M,M,M,HH13,M,M,M,F,M)
-    CALL DMCRCR (M,M,LU,M,M,M,F,M,M,M,HH13,M)
-    CALL DMCRCR (M,M,LU2,M,M,M,HH23,M,M,M,F,M)
-    CALL DMCRCR (M,M,LU,M,M,M,F,M,M,M,HH23,M)
-    CALL DMCRCR (M,M,LI3,M,M,M,HH32,M,M,M,F,M)
-    CALL DMCRCR (M,M,LI,M,M,M,F,M,M,M,HH32,M)
-    CALL DMCRCR (M,M,LI2,M,M,M,HH42,M,M,M,F,M)
-    CALL DMCRCR (M,M,LI,M,M,M,F,M,M,M,HH42,M)
-    CALL DMCRCR (M,M,LI3,M,M,M,HH34,M,M,M,F,M)
-    CALL DMCRCR (M,M,LI,M,M,M,F,M,M,M,HH34,M)
-    CALL DMCRCR (M,M,LI2,M,M,M,HH44,M,M,M,F,M)
-    CALL DMCRCR (M,M,LI,M,M,M,F,M,M,M,HH44,M)
+    F = DMCRCR(M,M,LU3,M,M,M,HH11,M,M,M,F,M)
+    HH11 = DMCRCR(M,M,LU,M,M,M,F,M,M,M,HH11,M)
+    F = DMCRCR(M,M,LU2,M,M,M,HH21,M,M,M,F,M)
+    HH21 = DMCRCR(M,M,LU,M,M,M,F,M,M,M,HH21,M)
+    F = DMCRCR(M,M,LU3,M,M,M,HH13,M,M,M,F,M)
+    HH13 = DMCRCR(M,M,LU,M,M,M,F,M,M,M,HH13,M)
+    F = DMCRCR(M,M,LU2,M,M,M,HH23,M,M,M,F,M)
+    HH23 = DMCRCR(M,M,LU,M,M,M,F,M,M,M,HH23,M)
+    F = DMCRCR(M,M,LI3,M,M,M,HH32,M,M,M,F,M)
+    HH32 = DMCRCR(M,M,LI,M,M,M,F,M,M,M,HH32,M)
+    F = DMCRCR(M,M,LI2,M,M,M,HH42,M,M,M,F,M)
+    HH42 = DMCRCR(M,M,LI,M,M,M,F,M,M,M,HH42,M)
+    F = DMCRCR(M,M,LI3,M,M,M,HH34,M,M,M,F,M)
+    HH34 = DMCRCR(M,M,LI,M,M,M,F,M,M,M,HH34,M)
+    F = DMCRCR(M,M,LI2,M,M,M,HH44,M,M,M,F,M)
+    HH44 = DMCRCR(M,M,LI,M,M,M,F,M,M,M,HH44,M)
 
-    DO 105 I=1,M10
-        DO 105 J=1,M20
-            GG3(I,J)=0.0
+    for i in range(M10):
+        for j in range(M20):
+            GG3[i,j]=0.0
 
-    DO 306 I=1,M
-        DO 306 J=1,M
-            GG3(I,J)=-HH11(I,J)+HH21(I,J)
-            GG3(I,J+2*M)=-HH13(I,J)+HH23(I,J)
-            GG3(I,J+3*M)=-Z(I,J)
-            GG3(I+M,J+M)=-HH32(I,J)+HH42(I,J)
-            GG3(I+M,J+2*M)=-Y(I,J)
-            GG3(I+M,J+3*M)=-HH34(I,J)+HH44(I,J)
+    for i in range(M):
+        for j in range(M):
+            GG3[i,j]=-HH11[i,j]+HH21[i,j]
+            GG3[i,j+2*M]=-HH13[i,j]+HH23[i,j]
+            GG3[i,j+3*M]=-Z[i,j]
+            GG3[i+M,j+M]=-HH32[i,j]+HH42[i,j]
+            GG3[i+M,j+2*M]=-Y[i,j]
+            GG3[i+M,j+3*M]=-HH34[i,j]+HH44[i,j]
 
     K1=0
     K0=0
-    DO 307 J=1,M20
 
-        IF (IH(J).EQ.1):
+    for j in range(M20):
+
+        if IH[j] == 1:
             K1=K1+1
-        IF (IH(J).EQ.0):
-            GOTO 309
+        if IH[j] == 0:
+            if IH[j] == 0:
+                K0=K0+1
+            if IH[j] == 1:
+                continue
 
-        DO 308 I=1,M10
-            GG4(I,K1)=-GG3(I,J)
-            B10(K1)=B5(J)
-      308   CONTINUE
+            for i in range(M10):
+                GG5[i,K0]=GG3[i,j]
 
-        GOTO 307
-      309   CONTINUE
-
-        IF (IH(J).EQ.0):
-            K0=K0+1
-        IF (IH(J).EQ.1):
-            GOTO 307
-
-        DO 310 I=1,M10
-            GG5(I,K0)=GG3(I,J)
-      310   CONTINUE
-  307   CONTINUE
+        else:
+            for i in range(M10):
+                GG4[i,K1]=-1*GG3[i,j] # Original was -GG3[i,j]
+                B10[K1]=B5[j]
 
 
-    CALL DMUCRV (M10,M10,GG4,M10,M10,B10,1,M10,B6)
-    CALL DLSLCG(M10,GG5,M10,B6,1,B7)
+    B6 = DMUCRV (M10,M10,GG4,M10,M10,B10,1,M10,B6)
+    B7 = DLSLCG(M10,GG5,M10,B6,1,B7)
     K1=0
-    DO 322 J=1,M20
-    IF (IH(J).EQ.0) K1=K1+1
-    IF (IH(J).EQ.1) GOTO 322
-    B5(J)=B7(K1)
-  322   CONTINUE
-    DO 321 I=1,M
-    UK1(I)=B5(I)
-    AIK1(I)=B5(I+M)
-  321   CONTINUE
-    CALL DMUCRV(M,M,Z,M,M,AIK1,1,M,AA)
-    CALL DMUCRV(M,M,Y,M,M,UK1,1,M,BB)
-    CALL DMCRCR(M,M,LI,M,M,M,LI3,M,M,M,CC,M)
-    CALL DMCRCR(M,M,LI,M,M,M,LI2,M,M,M,DD,M)
-    DO 323 I=1,M
-    B1(I)=UK1(I)
-    B1(I+M)=AIK1(I)
-    B1(I+2*M)=AA(I)
-    B1(I+3*M)=BB(I)
-  323   CONTINUE
-    CALL DLSLCG(M20,GG,M20,B1,1,B4)
-    DO 1501 I=1,M
-    AA(I)=0.
-    B(I)=0.
- 1501   B(I)=B4(I)
-    CALL DMUCRV(M,M,LU3,M,M,B,1,M,AA)
-    DO 1502 I=1,M
-    BB(I)=0.
-    B(I)=0.
- 1502   B(I)=B4(I+M)
-    CALL DMUCRV(M,M,LU2,M,M,B,1,M,BB)
-    DO 1503 I=1,M
-    UX(I)=AA(I)+BB(I)
-    IF(LM.EQ.MMT)UK1(I)=UX(I)
- 1503   UXM(I)=DSQRT(REAL(UX(I))**2+AIMAG(UX(I))**2)
-    DO 1504 I=1,M
-    AA(I)=0.
-    B(I)=0.
- 1504 B(I)=B4(I+2*M)
-    CALL DMUCRV(M,M,LI3,M,M,B,1,M,AA)
-    DO 1505 I=1,M
-    BB(I)=0.
-    B(I)=0.
- 1505   B(I)=B4(I+3*M)
-    CALL DMUCRV(M,M,LI2,M,M,B,1,M,BB)
-    DO 1506 I=1,M
-    AIX(I)=AA(I)+BB(I)
-    IF(LM.EQ.MMT) AIK1(I)=AIX(I)
-    AIXM(I)=SQRT(REAL(AIX(I))**2+AIMAG(AIX(I))**2)
-    IF(I.EQ.1.AND.LL.EQ.1.AND.PR.EQ.2)
-    /PPP1(NN,LL)=PPP1(NN,LL)+AIXM(1)**2/2*R11(1)
-    IF(I.EQ.1.AND.LL.GT.1)PPP1(NN,LL)=PPP1(NN,LL)+AIXM(1)**2/2*R11(1)
-    IF(I.EQ.2.AND.LL.EQ.1.AND.PR.EQ.2)
-    /PPP2(NN,LL)=PPP2(NN,LL)+AIXM(2)**2/2*R11(2)
-    IF(I.EQ.2.AND.LL.GT.1)PPP2(NN,LL)=PPP2(NN,LL)+AIXM(2)**2/2*R11(2)
-    IF(I.EQ.3.AND.LL.EQ.1.AND.PR.EQ.2)
-    /PPP3(NN,LL)=PPP3(NN,LL)+AIXM(3)**2/2*R11(3)
-    IF(I.EQ.3.AND.LL.GT.1)PPP3(NN,LL)=PPP3(NN,LL)+AIXM(3)**2/2*R11(3)
-    IF(I.EQ.4.AND.LL.EQ.1.AND.PR.EQ.2)
-    /PPP4(NN,LL)=PPP4(NN,LL)+AIXM(4)**2/2*R11(4)
-    IF(I.EQ.4.AND.LL.GT.1)PPP4(NN,LL)=PPP4(NN,LL)+AIXM(4)**2/2*R11(4)
-    IF(I.EQ.5.AND.LL.EQ.1.AND.PR.EQ.2)
-    /PPP5(NN,LL)=PPP5(NN,LL)+AIXM(5)**2/2*R11(5)
-    IF(I.EQ.5.AND.LL.GT.1)PPP5(NN,LL)=PPP5(NN,LL)+AIXM(5)**2/2*R11(5)
-    IF(I.EQ.6.AND.LL.EQ.1.AND.PR.EQ.2)
-    /PPP6(NN,LL)=PPP6(NN,LL)+AIXM(6)**2/2*R11(6)
-    IF(I.EQ.6.AND.LL.GT.1)PPP6(NN,LL)=PPP6(NN,LL)+AIXM(6)**2/2*R11(6)
-    IF(I.EQ.7.AND.LL.EQ.1.AND.PR.EQ.2)
-    /PPP7(NN,LL)=PPP7(NN,LL)+AIXM(7)**2/2*R11(7)
-    IF(I.EQ.7.AND.LL.GT.1)PPP7(NN,LL)=PPP7(NN,LL)+AIXM(7)**2/2*R11(7)
-    IF(I.EQ.8.AND.LL.EQ.1.AND.PR.EQ.2)
-    /PPP8(NN,LL)=PPP8(NN,LL)+AIXM(8)**2/2*R11(8)
-    IF(I.EQ.8.AND.LL.GT.1)PPP8(NN,LL)=PPP8(NN,LL)+AIXM(8)**2/2*R11(8)
-    IF(LL.EQ.1.AND.PR.EQ.2.)PPP(NN,LL)=PPP(NN,LL)+AIXM(I)**2/2*R11(I)
-    IF(LL.GT.1)PPP(NN,LL)=PPP(NN,LL)+AIXM(I)**2/2*R11(I)
-    IF(LL.EQ.1.AND.PR.EQ.1.)PP1=PP1+AIXM(I)**2/2*R11(I)
-    IF(LL.EQ.1.AND.PR.EQ.2.)PP2=PP2+AIXM(I)**2/2*R11(I)
-    SM(I)=UX(I)*DCONJG(AIX(I))/2.
- 1506   CONTINUE
-    WRITE(10,196) UXM
-    WRITE(11,196) AIXM
- 2104   CONTINUE
- 1300   CONTINUE
-    GOTO 1200
+
+    for j in range(M20):
+        if IH[j] == 0:
+            K1=K1+1
+        if IH[j] == 1:
+            continue
+
+        B5[j]=B7[K1]
+
+    for i in range(M):
+        UK1[i]=B5[i]
+        AIK1[i]=B5[i+M]
+
+    AA = DMUCRV(M,M,Z,M,M,AIK1,1,M,AA)
+    BB = DMUCRV(M,M,Y,M,M,UK1,1,M,BB)
+    M = DMCRCR(M,M,LI,M,M,M,LI3,M,M,M,CC,M)
+    M = DMCRCR(M,M,LI,M,M,M,LI2,M,M,M,DD,M)
+
+    for i in range(M):
+        B1[i]=UK1[i]
+        B1[i+M]=AIK1[i]
+        B1[i+2*M)=AA[i]
+        B1[i+3*M]=BB[i]
+
+    B4 = DLSLCG(M20,GG,M20,B1,1,B4)
+
+    for i in range(M):
+        AA[i]=0.
+        B[i]=0.
+        B[i]=B4[i]
+
+    AA = DMUCRV(M,M,LU3,M,M,B,1,M,AA)
+
+    for i in range(M):
+        BB[i]=0.
+        B[i]=0.
+        B[i]=B4[i+M]
+
+    BB = DMUCRV(M,M,LU2,M,M,B,1,M,BB)
+
+    for i in range(M):
+        UX[i]=AA[i]+BB[i]
+        if LM == MMT:
+            UK1[i]=UX[i]
+        UXM[i]=DSQRT(REAL(UX[i])**2+AIMAG(UX[i])**2)
+
+    for i in range(M):
+        AA[i]=0.
+        B[i]=0.
+        B[i]=B4[i+2*M]
+
+    AA = DMUCRV(M,M,LI3,M,M,B,1,M,AA)
+
+    for i in range(M):
+        BB[i]=0.
+        B[i]=0.
+        B[i]=B4[i+3*M]
+
+    BB = DMUCRV(M,M,LI2,M,M,B,1,M,BB)
+
+    for i in range(M):
+
+        AIX[i]=AA[i]+BB[i]
+        if LM == MMT:
+            AIK1[i]=AIX[i]
+        AIXM[i]=np.sqrt(AIX[i].real**2+AIX[i].imag**2)
+
+        if I == 1 and LL == 1 and PR == 2:
+            PPP1[NN,LL]=PPP1[NN,LL]+AIXM[0]**2/2*R11[0]
+        if I == 1 and LL > 1:
+            PPP1[NN,LL]=PPP1[NN,LL]+AIXM[0]**2/2*R11[0]
+        if I == 2 and LL == 1 and PR == 2:
+            PPP2[NN,LL]=PPP2[NN,LL]+AIXM[1]**2/2*R11[1]
+        if I == 2 and LL > 1:
+            PPP2[NN,LL]=PPP2[NN,LL]+AIXM[1]**2/2*R11[1]
+        if I == 3 and LL == 1 and PR == 2:
+            PPP3[NN,LL]=PPP3[NN,LL]+AIXM[2]**2/2*R11[2]
+        if I == 3 and LL > 1:
+            PPP3[NN,LL]=PPP3[NN,LL]+AIXM[2]**2/2*R11[2]
+        if I == 4 and LL == 1 and PR == 2:
+            PPP4[NN,LL]=PPP4[NN,LL]+AIXM[3]**2/2*R11[3]
+        if I == 4 and LL > 1:
+            PPP4[NN,LL]=PPP4[NN,LL]+AIXM[3]**2/2*R11[3]
+        if I == 5 and LL == 1 and PR == 2:
+            PPP5[NN,LL]=PPP5[NN,LL]+AIXM[4]**2/2*R11[4]
+        if I == 5 and LL > 1:
+            PPP5[NN,LL]=PPP5[NN,LL]+AIXM[4]**2/2*R11[4]
+        if I == 6 and LL == 1 and PR == 2:
+            PPP6[NN,LL]=PPP6[NN,LL]+AIXM[5]**2/2*R11[5]
+        if I == 6 and LL > 1:
+            PPP6[NN,LL]=PPP6[NN,LL]+AIXM[5]**2/2*R11[5]
+        if I == 7 and LL == 1 and PR == 2:
+            PPP7[NN,LL]=PPP7[NN,LL]+AIXM[6]**2/2*R11[6]
+        if I == 7 and LL > 1:
+            PPP7[NN,LL]=PPP7[NN,LL]+AIXM[6]**2/2*R11[6]
+        if I == 8 and LL == 1 and PR == 2:
+            PPP8[NN,LL]=PPP8[NN,LL]+AIXM[7]**2/2*R11[7]
+        if I == 8 and LL > 1:
+            PPP8[NN,LL]=PPP8[NN,LL]+AIXM[7]**2/2*R11[7]
+        if LL == 1 and PR == 2.:
+            PPP[NN,LL]=PPP[NN,LL]+AIXM[I]**2/2*R11[I]
+        if LL > 1:
+            PPP[NN,LL]=PPP[NN,LL]+AIXM[I]**2/2*R11[I]
+        if LL == 1 and PR == 1.:
+            PP1=PP1+AIXM[I]**2/2*R11[I]
+        if LL == 1 and PR == 2.:
+            PP2=PP2+AIX[I]**2/2*R11[I]
+        SM[i]=UX[i]*np.conj(AIX[i])/2.
+
+    # Writing UXM and AIXM values into 10th and 11th modules
