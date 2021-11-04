@@ -1,8 +1,9 @@
 from numpy import linalg as LA
-from scipy.linalg import sqrtm
+from scipy.linalg import logm, expm, sqrtm, eig, lu, lu_factor, lu_solve
 import pandas as pd
 from itertools import tee
 import numpy as np
+from numpy.linalg import inv
 import scipy
 import math
 
@@ -694,737 +695,8 @@ class PodStans():
 
 
 
-# Implementing RASCHET fortran's subroutine in python
-# Implementing RASCHET fortran's subroutine in python
-def RASCHET():
-    global UK1,AIK1,LL,NN,PPP,PP1,PP2,PPP1,PPP2,PPP3,PPP4,PPP5,PPP6,PPP7,PPP8, MM,M,M1,MT,M10,M20,PR,K1,K2,K3,N1,N2,N3,MPR,MTR,MMT
-
-    XA, YA, UXM, GM, OMP, R0, R, S, HI, R11, DET2, DET4 = np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M))
-    EVU, B, UX, AIX, UK1, AIK1, SM, EVI, DET1, DET3, BB, AIXM, AA = np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)), np.zeros((M)),
-    B1, B4, B5 = np.zeros((M2)), np.zeros((M2)), np.zeros((M2))
-    B6, B10, B7 = np.zeros((M10)), np.zeros((M10)), np.zeros((M10))
-
-    DET10, DET20, SS, SS1, EX1,  = [], [], [], [], []
-
-    HC1, HC2, HC3, HC4, F10, XL, XL1, G, D, HC, UXM = np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M))
-    Z, Y, AU, E, F, AAI, F1 = np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M))
-    F2, D1, D2, D3, LU, LI = np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M))
-    LU1, LI1, LU2, LU3, LI2, LI3 = np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M))
-    F3, F4, F5, F6, F7 = np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M))
-    HH13, HH14, HH21, HH22, HH23 = np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M))
-    HH31, HH32, HH33, HH34, HH24 = np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M))
-    HH41, HH42, HH43, HH44 = np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M))
-    CC, DD, HH11, HH12 = np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M)), np.zeros((M, M))
-
-    AG, GG = np.zeros((M1, M, M)), np.zeros((M20, M20))
-    GG1, GG2, GG3, GG4, GG5 = np.zeros((M20, M20)), np.zeros((M20, M20)), np.zeros((M10, M20)), np.zeros((M10, M10)), np.zeros((M10, M10))
-    IPVT1, IH = np.zeros((M1)), np.zeros((M20))
-
-    if PR == 1:
-        PP1 = 0
-    if PR == 2:
-        PP2 = 0
-    PPP[NN, LL] = 0
-    PPP1[NN, LL] = 0
-    PPP2[NN, LL] = 0
-    PPP3[NN, LL] = 0
-    PPP4[NN, LL] = 0
-    PPP5[NN, LL] = 0
-    PPP6[NN, LL] = 0
-    PPP7[NN, LL] = 0
-    PPP8[NN, LL] = 0
-
-    MMT = MM / MT
-    W = float(LL)
-    EX1 = complex(2.71828, 0)
-
-    # WRITING INTO UNIT 5. LINE MAIN CHARACTERISTIC
-    for i in range(M):
-        R[i]=np.sqrt(S[i]/np.pi)/1000.
-        HI[i]=R[i]/(2.)*np.sqrt(2*np.pi*W*50*4*np.pi*OMP[i]*GM[i]/20)
-        R0[i]=1000/(GM[i]*S[i])
-        if HI[i] < 1:
-            R11[i]=R0[i]*(1+HI[i]**4/3)
-        if HI[i] > 1:
-            R11[i]=R0(i)*(HI[i]+0.25+3./(64.*HI[i]))
-        if i+1 == M:
-            pass
-            # WRITE R11's values INTO THE FILE "R11"
-
-    # 845 - 12
-    for i in range(M10):
-        for j in range(M10):
-            HH[i,j] = 0
-
-    # 12 - 161
-    for i in range(M):
-        for j in range(M):
-            if i == j:
-                D[i,i] = R[i]
-            if i != j:
-                D[i,j]=np.sqrt((XA[i]-XA[j])**2+(YA[i]-YA[j])**2)
-            HC[i,j]=np.sqrt((XA[i]-XA[j])**2+(YA[i]+YA[j])**2)
-            E[i,j]=complex(0.0, 0.0)
-            E[i,i]=complex(1.0, 0.0)
-
-    # 161 - 740
-    for i in range(M):
-        for j in range(M):
-            XL1[i,j]=0.145*np.log10(1000/D[i,j])/np.pi
-
-    # 740 - 743
-    for i in range(M):
-        for j in range(M):
-            HC1[i,j]=41.4*10.**6*np.log10(HC[i,j]/D[i,j])
-
-    # 743 - 744
-    HC3 = DLINRG(M,HC1,M,HC3,M)
-    F10 = DMRRRR(M,M,HC1,M,M,M,HC3,M,M,M,F10,M)
-
-    for i in range(M):
-        for j in range(M):
-            HC2[i,j]=HC3[i,j]*2.*np.pi*50
-
-    # 744 - 847
-    for i in range(M):
-        for j in range(M):
-            XL[i,j]=XL1[i,j]*W*2*50*np.pi
-            HC4[i,j]=HC2[i,j]*W
-            R10=0.0
-            if i == j:
-                Z[i,j]=complex(R11[i],XL[i,j])
-            if i != j:
-                Z[i,j]=complex(R10,XL[i,j])
-            if i == j:
-                G[i,j]=0.00000004*YA[i]/YA[i]
-            if i != j:
-                G[i,j]=-0.00000004*YA[1]/D[i,j]
-            G[i,j]=0.
-            Y[i,j]=complex(G[i,j],HC4[i,j])
-
-
-    # 847 - the end of subroutine
-    for III in range(MT): # <----- main loop # 1300
-
-        if M != 3: # GOTO 767
-            if (M != 4): # GOTO 768
-                if (M != 6): # GOTO 769
-                    if (M != 7): # GOTO 770
-                        if (M != 8): # GOTO 771
-                            AU = DMCRCR(M,M,Z,M,M,M,Y,M,M,M,AU,M)
-                            SS1=np.sqrt(AU[1,1])
-                            EVU = DEVLCG(M,AU,M,EVU)
-                            # IMPORTANT POINT
-                            for j in range(M):
-                                for i in range(M):
-                                    F[i,j]=EVU[i]**(j) # (j-1) was in the first case
-                                    F1[i,j]=F[i,j]
-
-                            for i in range(M1):
-                                for j in range(M1):
-                                    A1[i,j]=F[i,j]
-
-                            A2 = DLFTCG(M1,A1,M1,A2,M1,IPVT1)
-                            SS = DET10 = DLFDCG(M1,A2,M1,IPVT1); DET20 = 1 # parameters DET10,DET20 were in function call
-                            # SS=DET10*(10.**DET20)
-
-                            for j in range(M1):
-
-                                for ii in range(M1):
-                                    for jj in range(M1):
-                                        F[ii,jj]=F1[ii,jj]
-
-                                for i in range(M1):
-                                    F[i,j]=EVU[i]**0.5
-
-                                for ii in range(M1):
-                                    for jj in range(M1):
-                                        A1[ii,jj]=F[ii,jj]
-
-                                A2 = DLFTCG(M1,A1,M1,A2,M1,IPVT1)
-                                DET1[j] = DLFDCG(M1,A2,M1,IPVT1); DET2[j] = 1 # parameters DET1(J),DET2(J) were in function call
-
-
-                            F2 = DMCRCR(M,M,AU, M,M,M,AU,M,M,M,F2,M)
-                            F3 = DMCRCR(M,M,F2,M,M,M,AU,M,M,M,F3,M)
-                            F4 = DMCRCR(M,M,F3,M,M,M,AU,M,M,M,F4,M)
-                            F5 = DMCRCR(M,M,F4,M,M,M,AU,M,M,M,F5,M)
-                            F6 = DMCRCR(M,M,F5,M,M,M,AU,M,M,M,F6,M)
-                            F7 = DMCRCR(M,M,F6,M,M,M,AU,M,M,M,F7,M)
-
-                            for i in range(M1):
-                                for ii in range(M):
-                                    for jj in range(M):
-
-                                        if i == 1:
-                                            AG[1,ii,jj]=E[ii,jj]
-                                        if i == 2:
-                                            AG[2,ii,jj]=AU[ii,jj]
-                                        if i == 3:
-                                            AG[3,ii,jj]=F2[ii,jj]
-                                        if i == 4:
-                                            AG[4,ii,jj]=F3[ii,jj]
-                                        if i == 5:
-                                            AG[5,ii,jj]=F4[ii,jj]
-                                        if i == 6:
-                                            AG[6,ii,jj]=F5[ii,jj]
-                                        if i == 7:
-                                            AG[7,ii,jj]=F6[ii,jj]
-                                        if i == 8:
-                                            AG[8,ii,jj]=F7[ii,jj]
-
-                            for ii in range(M):
-                                for jj in range(M):
-                                    LU[ii,jj]=0.
-
-                            for i in range(M1):
-                                DET3[i]=DET1[i]/DET10
-                                DET4[i]=DET2[i]-DET20
-                                for ii in range(M):
-                                    for jj in range(M):
-                                        LU[ii,jj]=LU[ii,jj]+AG[i,ii,jj]*DET3[i]*(10**DET4[i])
-
-
-                            F3 = DMCRCR(M,M,LU,M,M,M,LU,M,M,M,F3,M)
-                            AAI = DMCRCR(M,M,Y,M,M,M,Z,M,M,M,AAI,M)
-                            EVI = DEVLCG(M,AAI,M,EVI)
-
-                            for j in range(M):
-                                for i in range(M):
-                                    F[i,j] = EVI[i]**[j-1]
-                                    F1[i,j] = F[i,j]
-
-                            for i in range(M1):
-                                for j in range(M1):
-                                    A1[i,j]=F[i,j]
-
-                            A2 = DLFTCG(M1,A1,M1,A2,M1,IPVT1)
-                            DET10 = DLFDCG(M1,A2,M1,IPVT1); DET20 = 1 # parameters DET10,DET20 were in function call
-
-                            for j in range(M1):
-                                for ii in range(M1):
-                                    for jj in range(M1):
-                                        F[ii,jj]=F1[ii,jj]
-
-                                for i in range(M1):
-                                    F[i,j]=EVI[i]**0.5
-                                for ii in range(M1):
-                                    for jj in range(M1):
-                                        A1[ii,jj]=F[ii,jj]
-
-                                A2 = DLFTCG(M1,A1,M1,A2,M1,IPVT1)
-                                DET1[j] = DLFDCG(M1,A2,M1,IPVT1); DET2[j] = 1 # parameters DET1(J),DET2(J) were in function call
-
-                            F2 = DMCRCR(M,M,AAI, M,M,M,AAI,M,M,M,F2,M)
-                            F3 = DMCRCR(M,M,F2,M,M,M,AAI,M,M,M,F3,M)
-                            F4 = DMCRCR(M,M,F3,M,M,M,AAI,M,M,M,F4,M)
-                            F5 = DMCRCR(M,M,F4,M,M,M,AAI,M,M,M,F5,M)
-                            F6 = DMCRCR(M,M,F5,M,M,M,AAI,M,M,M,F6,M)
-                            F7 = DMCRCR(M,M,F6,M,M,M,AAI,M,M,M,F7,M)
-
-                            for i in range(M1):
-                                for ii in range(M):
-                                    for jj in range(M):
-
-                                        if I == 1:
-                                            AG[1,ii,jj]=E[ii,jj]
-                                        if I == 2:
-                                            AG[2,ii,jj]=AAI[ii,jj]
-                                        if I == 3:
-                                            AG[3,ii,jj]=F2[ii,jj]
-                                        if I == 4:
-                                            AG[4,ii,jj]=F3[ii,jj]
-                                        if I == 5:
-                                            AG[5,ii,jj]=F4[ii,jj]
-                                        if I == 6:
-                                            AG[6,ii,jj]=F5[ii,jj]
-                                        if I == 7:
-                                            AG[7,ii,jj]=F6[ii,jj]
-                                        if I == 8:
-                                            AG[8,ii,jj]=F7[ii,jj]
-
-                            for ii in range(M):
-                                for jj in range(M):
-                                    LI[ii,jj]=0.
-
-                            for i in range(M1):
-                               for ii in range(M):
-                                    for jj in range(M):
-                                        LI[ii,jj]=LI[ii,jj]+(DET1[i]*(10**DET2[i])*AG[i,ii,jj])/(DET10*(10**DET20))
-
-
-                            F3 = DMCRCR(M,M,LI,M,M,M,LI,M,M,M,F3,M)
-                            LM=MMT
-
-                            for n, _ in enumerate(range(2), start=1):
-
-                                if n == 1:
-                                    SA=-1.
-                                if n == 2:
-                                    SA=1.
-
-                                for ii in range(M):
-                                    for jj in range(M):
-                                        LU1[ii,jj]=SA*MMT*LU[ii,jj]
-
-
-                                EVU = DEVLCG(M,LU1,M,EVU)
-                                for i in rane(M):
-                                    for j in range(M):
-                                        F[i,j]=EVU[i]**(j) # (j-1) here was an expression (j-1)
-
-
-                                for ii in range(M):
-                                    for jj in range(M):
-                                        F1[ii,jj]=F[ii,jj]
-
-
-                                for ii in range(M1):
-                                    for jj in range(M1):
-                                        A1[ii,jj]=F[ii,jj]
-
-
-                                A2 = DLFTCG(M1,A1,M1,A2,M1,IPVT1)
-                                DET10 = DLFDCG(M1,A2,M1,IPVT1); DET20 = 1 # DET10 and DET20 were the arguments of this function
-
-                                for j in range(M):
-                                    for ii in range(M):
-                                        for jj in range(M):
-                                            F[ii,jj]=F1[ii,jj]
-
-
-                                    for i in range(M):
-                                        F[i,j]=EX1**EVU[i]
-
-
-                                    for ii in range(M1):
-                                        for jj in range(M2):
-                                            A1[ii,jj]=F[ii,jj]
-
-
-                                    A2 = DLFTCG(M1,A1,M1,A2,M1,IPVT1)
-                                    DET1[j] = DLFDCG(M1,A2,M1,IPVT1); DET2[j] = 1
-
-
-                                F2 = DMCRCR(M,M,LU1, M,M,M,LU1,M,M,M,F2,M)
-                                F3 = DMCRCR(M,M,F2,M,M,M,LU1,M,M,M,F3,M)
-                                F4 = DMCRCR(M,M,F3,M,M,M,LU1,M,M,M,F4,M)
-                                F5 = DMCRCR(M,M,F4,M,M,M,LU1,M,M,M,F5,M)
-                                F6 = DMCRCR(M,M,F5,M,M,M,LU1,M,M,M,F6,M)
-                                F7 = DMCRCR(M,M,F6,M,M,M,LU1,M,M,M,F7,M)
-
-                                for i in range(M1):
-                                    for ii in range(M):
-                                        for jj in range(M):
-
-                                            if i == 1:
-                                                AG[1,ii,jj]=E[ii,jj]
-                                            if i == 2:
-                                                AG[2,ii,jj]=LU1[ii,jj]
-                                            if i == 3:
-                                                AG[3,ii,jj]=F2[ii,jj]
-                                            if i == 4:
-                                                AG[4,ii,jj]=F3[ii,jj]
-                                            if i == 5:
-                                                AG[5,ii,jj]=F4[ii,jj]
-                                            if i == 6:
-                                                AG[6,ii,jj]=F5[ii,jj]
-                                            if i == 7:
-                                                AG[7,ii,jj]=F6[ii,jj]
-                                            if i == 8:
-                                                AG[8,ii,jj]=F7[ii,jj]
-
-                                for ii in range(M):
-                                    for jj in range(M):
-                                        LU2[ii,jj]=0.
-
-                                for i in range(M1):
-                                    for ii in range(M):
-                                        for jj in range(M):
-                                            LU2[ii,jj]=LU2[ii,jj]+(DET1[i]*(10**DET2[i])*AG[i,ii,jj])/(DET10*(10**DET20))
-
-                                if N == 2:
-                                    F2 = DMCRCR(M,M,LU3,M,M,M,LU2,M,M,M,F2,M)
-                                    continue
-                                else:
-                                    for ii in range(M):
-                                        for jj in range(M):
-                                            LU3[ii,jj]=LU2[ii,jj]
-
-                        else:
-                            # 770 - 766
-                            for i in range(3):
-                                B5[i]=UK1[i]
-                                B5[i+3]=UK1[i]
-                                B5[MPR+1]=complex(0.,0.)
-                                B5[MPR+2]=complex(0.,0.)
-                                B5[i+M]=AIK1[i]
-                                B5[i+M+3]=AIK1[i]
-                                B5[2*M-1]=complex(0.,0.)
-                                B5[2*M]=complex(0.,0.)
-                                B5[i+2*M]=complex(0.,0.)
-                                B5[i+2*M+3]=complex(0.,0.)
-                                B5[3*M-1]=complex(0.,0.)
-                                B5[3*M]=complex(0.,0.)
-                                B5[i+3*M]=complex(0.,0.)
-                                B5[i+3*M+3]=complex(0.,0.)
-                                B5[4*M-1]=complex(0.,0.)
-                                B5[4*M]=complex(0.,0.)
-
-                    else:
-                        # 769 - 765
-                        for i in range(3):
-                            B5[i]=UK1[i]
-                            B5[i+3]=UK1[i]
-                            B5[M]=complex(0.,0.)
-                            B5[i+M]=AIK1[i]
-                            B5[i+M+3]=AIK1[i]
-                            B5[2*M]=complex(0.,0.)
-                            B5[i+2*M]=complex(0.,0.)
-                            B5[i+2*M+3]=complex(0.,0.)
-                            B5[3*M]=complex(0.,0.)
-                            B5[i+3*M]=complex(0.,0.)
-                            B5[i+3*M+3]=complex(0.,0.)
-                            B5[4*M]=complex(0.,0.)
-
-
-                else:
-                    # 768 - 764
-                    for i in range(3):
-                        B5[i]=UK1[i]
-                        B5[i+3]=UK1[i]
-                        B5[i+M]=AIK1[i]
-                        B5[i+M+3]=AIK1[i]
-                        B5[i+2*M]=complex(0.,0.)
-                        B5[i+2*M+3]=complex(0.,0.)
-                        B5[i+3*M]=complex(0.,0.)
-                        B5[i+3*M+3]=complex(0.,0.)
-
-            else:
-                # 767 -762
-                for i in range(3):
-                    B5[i]=UK1[i]
-                    B5[M]=complex(0.,0.)
-                    B5[i+M]=AIK1[i]
-                    B5[2*M]=complex(0.,0.)
-                    B5[i+2*M]=complex(0.,0.)
-                    B5[3*M]=complex(0.,0.)
-                    B5[i+3*M]=complex(0.,0.)
-                    B5[4*M]=complex(0.,0.)
-
-        else:
-            # 847 - 761
-            for i in range(3):
-                B5[i]=UK1[i]
-                B5[i+3]=AIK1[i]
-                B5[i+6]=complex(0.,0.)
-                B5[i+9]=complex(0.,0.)
-
-    for n in range(2):
-        if n == 1:
-            SA=-1
-        if n == 2:
-            SA=1
-
-        for ii in range(M):
-            for jj in range(M):
-                LI1[ii,jj]=SA*MMT*LI[ii,jj]
-
-        EVI = DEVLCG(M,LI1,M,EVI)
-
-        for i in range(M):
-            for j in range(M):
-                F[i,j]=EVI[i]**(J) # J-1 in original
-
-        for ii in range(M):
-            for jj in range(M):
-                F1[ii,jj]=F[ii,jj]
-
-        for ii in range(M1):
-            for jj in range(M1):
-                A1[ii,jj]=F[ii,jj]
-
-        A2 = DLFTCG(M1,A1,M1,A2,M1,IPVT1)
-        DET10 = DLFDCG(M1,A2,M1,IPVT1); DET20 = 1
-
-        for j in range(M):
-            for ii in range(M):
-                for jj in range(M):
-                    F[Iii,jj]=F1[ii,jj]
-
-            for i in range(M):
-                F[i,j]=EX1**EVI[i]
-
-            for ii in range(M1):
-                for jj in range(M1):
-                    A1[ii,jj]=F[ii,jj]
-
-            A2 = DLFTCG(M1,A1,M1,A2,M1,IPVT1)
-            DET1[j] = DLFDCG(M1,A2,M1,IPVT1); DET2[j] = 1
-
-
-        F2 = DMCRCR(M,M,LI1, M,M,M,LI1,M,M,M,F2,M)
-        F3 = DMCRCR(M,M,F2,M,M,M,LI1,M,M,M,F3,M)
-        F4 = DMCRCR(M,M,F3,M,M,M,LI1,M,M,M,F4,M)
-        F5 = DMCRCR(M,M,F4,M,M,M,LI1,M,M,M,F5,M)
-        F6 = DMCRCR(M,M,F5,M,M,M,LI1,M,M,M,F6,M)
-        F7 = DMCRCR(M,M,F6,M,M,M,LI1,M,M,M,F7,M)
-
-        for i in range(M1):
-            for ii in range(M):
-                for jj in range(M):
-                    if i == 1:
-                        AG[1,ii,jj]=E[ii,jj]
-                    if i == 2:
-                        AG[2,ii,jj]=LI1[ii,jj]
-                    if i == 3:
-                        AG[3,ii,jj]=F2[ii,jj]
-                    if i == 4:
-                        AG[4,ii,jj]=F3[ii,jj]
-                    if i == 5:
-                        AG[5,ii,jj]=F4[ii,jj]
-                    if i == 6:
-                        AG[6,ii,jj]=F5[ii,jj]
-                    if i == 7:
-                        AG[7,ii,jj]=F6[ii,jj]
-                    if i == 8:
-                        AG[8,ii,jj]=F7[ii,jj]
-
-        for ii in range(M):
-            for jj in range(M):
-                LI2[ii,jj]=0
-
-        for i in range(M1):
-            for ii in range(M):
-                for jj in range(M):
-                    LI2[ii,jj]=LI2[ii,jj]+(DET1[i]*(10**DET2[i])*AG[i,ii,jj])/(DET10*(10**DET20))
-
-        if n == 2:
-            continue
-        else:
-            for ii in range(M):
-                for jj in range(M):
-                    LI3[ii,jj]=LI2[ii,jj]
-
-
-    F2 = DMCRCR(M,M,LI3, M,M,M,LI2,M,M,M,F2,M)
-
-    for i in range(M20):
-        for j in range(M20):
-            GG[i,j]=0.
-            GG1[i,j]=0.
-            GG2[i,j]=0.
-
-    for i in range(M):
-        GG[i,i]=1.
-        GG[i,i+M]=1.
-        GG[i+M,i+2*M]=1.
-        GG[i+M,i+3*M]=1.
-        GG1[i,i]=1.
-        GG1[i,i+M]=1.
-        GG1[i+M,i+2*M]=1.
-        GG1[i+M,i+3*M]=1.
-
-    for i in range(M):
-        for j in range(M):
-            GG[i+2*M,j]=-LU[i,j]
-            GG[i+2*M,j+M]=LU[i,j]
-            GG[i+3*M,j+2*M]=-LI[i,j]
-            GG[i+3*M,j+3*M]=+LI[i,j]
-            GG1[i+2*M,j]=LU3[i,j]
-            GG1[i+2*M,j+M]=LU2[i,j]
-            GG1[i+3*M,j+2*M]=LI3[i,j]
-            GG1[i+3*M,j+3*M]=LI2[i,j]
-
-    GG2 = DLINCG (M20,GG1,M20,GG2,M20) # Look for M20
-
-    for i in range(M):
-        for j in range(M):
-            HH11[i,j]=GG2[i,j]
-            HH12[i,j]=GG2[i,j+M]
-            HH13[i,j]=GG2[i,j+2*M]
-            HH14[i,j]=GG2[i,j+3*M]
-            HH21[i,j]=GG2[i+M,j]
-            HH22[i,j]=GG2[i+M,j+M]
-            HH23[i,j]=GG2[i+M,j+2*M]
-            HH24[i,j]=GG2[i+M,j+3*M]
-            HH31[i,j]=GG2[i+2*M,j]
-            HH32[i,j]=GG2[i+2*M,j+M]
-            HH33[i,j]=GG2[i+2*M,j+2*M]
-            HH34[i,j]=GG2[i+2*M,j+3*M]
-            HH41[i,j]=GG2[i+3*M,j]
-            HH42[i,j]=GG2[i+3*M,j+M]
-            HH43[i,j]=GG2[i+3*M,j+2*M]
-            HH44[i,j]=GG2[i+3*M,j+3*M]
-
-    F = DMCRCR(M,M,LU3,M,M,M,HH11,M,M,M,F,M)
-    HH11 = DMCRCR(M,M,LU,M,M,M,F,M,M,M,HH11,M)
-    F = DMCRCR(M,M,LU2,M,M,M,HH21,M,M,M,F,M)
-    HH21 = DMCRCR(M,M,LU,M,M,M,F,M,M,M,HH21,M)
-    F = DMCRCR(M,M,LU3,M,M,M,HH13,M,M,M,F,M)
-    HH13 = DMCRCR(M,M,LU,M,M,M,F,M,M,M,HH13,M)
-    F = DMCRCR(M,M,LU2,M,M,M,HH23,M,M,M,F,M)
-    HH23 = DMCRCR(M,M,LU,M,M,M,F,M,M,M,HH23,M)
-    F = DMCRCR(M,M,LI3,M,M,M,HH32,M,M,M,F,M)
-    HH32 = DMCRCR(M,M,LI,M,M,M,F,M,M,M,HH32,M)
-    F = DMCRCR(M,M,LI2,M,M,M,HH42,M,M,M,F,M)
-    HH42 = DMCRCR(M,M,LI,M,M,M,F,M,M,M,HH42,M)
-    F = DMCRCR(M,M,LI3,M,M,M,HH34,M,M,M,F,M)
-    HH34 = DMCRCR(M,M,LI,M,M,M,F,M,M,M,HH34,M)
-    F = DMCRCR(M,M,LI2,M,M,M,HH44,M,M,M,F,M)
-    HH44 = DMCRCR(M,M,LI,M,M,M,F,M,M,M,HH44,M)
-
-    for i in range(M10):
-        for j in range(M20):
-            GG3[i,j]=0.0
-
-    for i in range(M):
-        for j in range(M):
-            GG3[i,j]=-HH11[i,j]+HH21[i,j]
-            GG3[i,j+2*M]=-HH13[i,j]+HH23[i,j]
-            GG3[i,j+3*M]=-Z[i,j]
-            GG3[i+M,j+M]=-HH32[i,j]+HH42[i,j]
-            GG3[i+M,j+2*M]=-Y[i,j]
-            GG3[i+M,j+3*M]=-HH34[i,j]+HH44[i,j]
-
-    K1=0
-    K0=0
-
-    for j in range(M20):
-
-        if IH[j] == 1:
-            K1=K1+1
-        if IH[j] == 0:
-            if IH[j] == 0:
-                K0=K0+1
-            if IH[j] == 1:
-                continue
-
-            for i in range(M10):
-                GG5[i,K0]=GG3[i,j]
-
-        else:
-            for i in range(M10):
-                GG4[i,K1]=-1*GG3[i,j] # Original was -GG3[i,j]
-                B10[K1]=B5[j]
-
-
-    B6 = DMUCRV (M10,M10,GG4,M10,M10,B10,1,M10,B6)
-    B7 = DLSLCG(M10,GG5,M10,B6,1,B7)
-    K1=0
-
-    for j in range(M20):
-        if IH[j] == 0:
-            K1=K1+1
-        if IH[j] == 1:
-            continue
-
-        B5[j]=B7[K1]
-
-    for i in range(M):
-        UK1[i]=B5[i]
-        AIK1[i]=B5[i+M]
-
-    AA = DMUCRV(M,M,Z,M,M,AIK1,1,M,AA)
-    BB = DMUCRV(M,M,Y,M,M,UK1,1,M,BB)
-    M = DMCRCR(M,M,LI,M,M,M,LI3,M,M,M,CC,M)
-    M = DMCRCR(M,M,LI,M,M,M,LI2,M,M,M,DD,M)
-
-    for i in range(M):
-        B1[i]=UK1[i]
-        B1[i+M]=AIK1[i]
-        B1[i+2*M]=AA[i]
-        B1[i+3*M]=BB[i]
-
-    B4 = DLSLCG(M20,GG,M20,B1,1,B4)
-
-    for i in range(M):
-        AA[i]=0.
-        B[i]=0.
-        B[i]=B4[i]
-
-    AA = DMUCRV(M,M,LU3,M,M,B,1,M,AA)
-
-    for i in range(M):
-        BB[i]=0.
-        B[i]=0.
-        B[i]=B4[i+M]
-
-    BB = DMUCRV(M,M,LU2,M,M,B,1,M,BB)
-
-    for i in range(M):
-        UX[i]=AA[i]+BB[i]
-        if LM == MMT:
-            UK1[i]=UX[i]
-        UXM[i]=DSQRT(REAL(UX[i])**2+AIMAG(UX[i])**2)
-
-    for i in range(M):
-        AA[i]=0.
-        B[i]=0.
-        B[i]=B4[i+2*M]
-
-    AA = DMUCRV(M,M,LI3,M,M,B,1,M,AA)
-
-    for i in range(M):
-        BB[i]=0.
-        B[i]=0.
-        B[i]=B4[i+3*M]
-
-    BB = DMUCRV(M,M,LI2,M,M,B,1,M,BB)
-
-    for i in range(M):
-
-        AIX[i]=AA[i]+BB[i]
-        if LM == MMT:
-            AIK1[i]=AIX[i]
-        AIXM[i]=np.sqrt(AIX[i].real**2+AIX[i].imag**2)
-
-        if I == 1 and LL == 1 and PR == 2:
-            PPP1[NN,LL]=PPP1[NN,LL]+AIXM[0]**2/2*R11[0]
-        if I == 1 and LL > 1:
-            PPP1[NN,LL]=PPP1[NN,LL]+AIXM[0]**2/2*R11[0]
-        if I == 2 and LL == 1 and PR == 2:
-            PPP2[NN,LL]=PPP2[NN,LL]+AIXM[1]**2/2*R11[1]
-        if I == 2 and LL > 1:
-            PPP2[NN,LL]=PPP2[NN,LL]+AIXM[1]**2/2*R11[1]
-        if I == 3 and LL == 1 and PR == 2:
-            PPP3[NN,LL]=PPP3[NN,LL]+AIXM[2]**2/2*R11[2]
-        if I == 3 and LL > 1:
-            PPP3[NN,LL]=PPP3[NN,LL]+AIXM[2]**2/2*R11[2]
-        if I == 4 and LL == 1 and PR == 2:
-            PPP4[NN,LL]=PPP4[NN,LL]+AIXM[3]**2/2*R11[3]
-        if I == 4 and LL > 1:
-            PPP4[NN,LL]=PPP4[NN,LL]+AIXM[3]**2/2*R11[3]
-        if I == 5 and LL == 1 and PR == 2:
-            PPP5[NN,LL]=PPP5[NN,LL]+AIXM[4]**2/2*R11[4]
-        if I == 5 and LL > 1:
-            PPP5[NN,LL]=PPP5[NN,LL]+AIXM[4]**2/2*R11[4]
-        if I == 6 and LL == 1 and PR == 2:
-            PPP6[NN,LL]=PPP6[NN,LL]+AIXM[5]**2/2*R11[5]
-        if I == 6 and LL > 1:
-            PPP6[NN,LL]=PPP6[NN,LL]+AIXM[5]**2/2*R11[5]
-        if I == 7 and LL == 1 and PR == 2:
-            PPP7[NN,LL]=PPP7[NN,LL]+AIXM[6]**2/2*R11[6]
-        if I == 7 and LL > 1:
-            PPP7[NN,LL]=PPP7[NN,LL]+AIXM[6]**2/2*R11[6]
-        if I == 8 and LL == 1 and PR == 2:
-            PPP8[NN,LL]=PPP8[NN,LL]+AIXM[7]**2/2*R11[7]
-        if I == 8 and LL > 1:
-            PPP8[NN,LL]=PPP8[NN,LL]+AIXM[7]**2/2*R11[7]
-        if LL == 1 and PR == 2.:
-            PPP[NN,LL]=PPP[NN,LL]+AIXM[I]**2/2*R11[I]
-        if LL > 1:
-            PPP[NN,LL]=PPP[NN,LL]+AIXM[I]**2/2*R11[I]
-        if LL == 1 and PR == 1.:
-            PP1=PP1+AIXM[I]**2/2*R11[I]
-        if LL == 1 and PR == 2.:
-            PP2=PP2+AIX[I]**2/2*R11[I]
-        SM[i]=UX[i]*np.conj(AIX[i])/2.
-
-    # Writing UXM and AIXM values into 10th and 11th modules
-
 # Implementing other FORTRAN's subroutines
-def DLINRG(N, A, LDA, AINV, LDAINV):
+def DLINRG(A):
     """
     Computes the inverse of a real general matrix.
 
@@ -1438,7 +710,7 @@ def DLINRG(N, A, LDA, AINV, LDAINV):
     return np.linalg.inv(A)
 
 
-def DMRRRR(NRA, NCA, A, LDA, NRB, NCB, B, LDB, NRC, NCC, C, LDC):
+def DMRRRR(A, B):
     """
     Multiply two real rectangular matrices, AB.
 
@@ -1461,7 +733,7 @@ def DMRRRR(NRA, NCA, A, LDA, NRB, NCB, B, LDB, NRC, NCC, C, LDC):
     return np.matmul(A, B)
 
 
-def DMCRCR(NRA, NCA, A, LDA, NRB, NCB, B, LDB, NRC, NCC, C, LDC):
+def DMCRCR(A, B):
     """
     Multiply two complex rectangular matrices, AB.
 
@@ -1484,7 +756,7 @@ def DMCRCR(NRA, NCA, A, LDA, NRB, NCB, B, LDB, NRC, NCC, C, LDC):
     return np.matmul(A, B)
 
 
-def DEVLCG(N, A, LDA, EVAL):
+def DEVLCG(A):
     """
     Compute all of the eigenvalues of a complex matrix.
 
@@ -1496,7 +768,7 @@ def DEVLCG(N, A, LDA, EVAL):
     return LA.eigvals(A)
 
 
-def DLFTCG(N, A, LDA, FAC, LDFAC, IPVT):
+def DLFTCG(A):
     """
     Compute the LU factorization of a complex general matrix.
 
@@ -1508,10 +780,10 @@ def DLFTCG(N, A, LDA, FAC, LDFAC, IPVT):
         LDFAC — Leading dimension of FAC exactly as specified in the dimension statement of the calling program.   (Input)
         IPVT — Vector of length N containing the pivoting information for the LU factorization.   (Output)
     """
-    return lu_factor(A)
+    return lu_factor(A)[0]
 
 
-def LFSCG(N, FAC, LDFAC, IPVT, B, IPATH, X):
+def LFSCG(FAC, IPVT, B):
     """
      Solve a complex general system of linear equations given the LU factorization of the coefficient matrix.
 
@@ -1529,7 +801,7 @@ def LFSCG(N, FAC, LDFAC, IPVT, B, IPATH, X):
     return lu_solve((FAC, IPVT), B)
 
 
-def DLFDCG(A, N, FAC, LDFAC, IPVT, DET1, DET2):
+def DLFDCG(A):
     """ !!! EXCEPTION ACCEPT ONLY A !!!
     Compute the determinant of a complex general matrix given the LU factorization of the matrix.
 
@@ -1545,7 +817,7 @@ def DLFDCG(A, N, FAC, LDFAC, IPVT, DET1, DET2):
     return np.linalg.det(A)
 
 
-def DLINCG(N, A, LDA, AINV, LDAINV):
+def DLINCG(N, A):
     """ !!! SCALE FIRST TO 1/N !!!
     Compute the inverse of a complex general matrix.
 
@@ -1556,12 +828,12 @@ def DLINCG(N, A, LDA, AINV, LDAINV):
         If A is not needed, A and AINV can share the same storage locations.
         LDAINV — Leading dimension of AINV exactly as specified in the dimension statement of the calling program.   (Input)
     """
-    if N:
-        A = A*1/N
+    # if N == True:
+    #     A = A*1/N
     return np.linalg.inv(A)
 
 
-def DMUCRV(NRA, NCA, A, LDA, NX, X, IPATH, NY, Y):
+def DMUCRV(A, X):
     """
     Multiply a complex rectangular matrix by a complex vector.
 
@@ -1581,7 +853,7 @@ def DMUCRV(NRA, NCA, A, LDA, NX, X, IPATH, NY, Y):
     return np.matmul(A, X)
 
 
-def DLSLCG(N, A, LDA, B, IPATH, X):
+def DLSLCG(A, X):
     """
     Solve a complex general system of linear equations without iterative refinement.
 
