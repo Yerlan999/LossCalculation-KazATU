@@ -3,7 +3,6 @@ from scipy.linalg import logm, expm, sqrtm, eig, lu, lu_factor, lu_solve
 import pandas as pd
 from itertools import tee
 import numpy as np
-from numpy.linalg import inv
 import scipy
 import math
 
@@ -830,7 +829,14 @@ def DLINCG(N, A):
     """
     # if N == True:
     #     A = A*1/N
-    return np.linalg.inv(A)
+
+    try:
+        OUT = np.linalg.inv(A)
+    except:
+        OUT = np.linalg.pinv(A)
+
+    return OUT
+
 
 
 def DMUCRV(A, X):
@@ -867,7 +873,11 @@ def DLSLCG(A, X):
         X — Complex vector of length N containing the solution to the linear system.   (Output)
         If B is not needed, B and X can share the same storage locations.
     """
-    return np.linalg.inv(A).dot(X)
+    try:
+        OUT = np.linalg.inv(A).dot(X)
+    except:
+        OUT = np.linalg.pinv(A).dot(X)
+    return OUT
 
 
 # Au = np.matmul(Z, Y)
