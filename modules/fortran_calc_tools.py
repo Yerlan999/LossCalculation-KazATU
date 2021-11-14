@@ -505,8 +505,10 @@ class PhaseHolder():
         Uphase_df = phase_df.iloc[:int(len(phase_df.index)/2),:]
         Iphase_df = phase_df.iloc[int(len(phase_df.index)/2):,:]
 
-        Is_amps = []; Is_phas = [];
-        Us_amps = []; Us_phas = [];
+        index_num = len(Uphase_df.index)
+
+        Is_amps = [np.zeros(index_num)]; Is_phas = [np.zeros(index_num)];
+        Us_amps = [np.zeros(index_num)]; Us_phas = [np.zeros(index_num)];
 
         for i, (a, p) in enumerate(pairwise_2(range(all_columns)), start=2): # Начало 2 !!!
             AU = Uphase_df.iloc[:,a].reset_index(drop=True).tolist(); AI = Iphase_df.iloc[:,a].reset_index(drop=True).tolist();
@@ -709,52 +711,6 @@ def DLINRG(A):
     return np.linalg.inv(A)
 
 
-def DMRRRR(A, B):
-    """
-    Multiply two real rectangular matrices, AB.
-
-        NRA — Number of rows of A.   (Input)
-        NCA — Number of columns of A.   (Input)
-        A — Real NRA by NCA matrix in full storage mode.   (Input)
-        LDA — Leading dimension of A exactly as specified in the dimension statement of the calling program.   (Input)
-        NRB — Number of rows of B.   (Input)
-        NRB must be equal to NCA.
-        NCB — Number of columns of B.   (Input)
-        B — Real NRB by NCB matrix in full storage mode.   (Input)
-        LDB — Leading dimension of B exactly as specified in the dimension statement of the calling program.   (Input)
-        NRC — Number of rows of C.   (Input)
-        NRC must be equal to NRA.
-        NCC — Number of columns of C.   (Input)
-        NCC must be equal to NCB.
-        C — Real NRC by NCC matrix containing the product AB in full storage mode.   (Output)
-        LDC — Leading dimension of C exactly as specified in the dimension statement of the calling program.   (Input)
-    """
-    return np.matmul(A, B)
-
-
-def DMCRCR(A, B):
-    """
-    Multiply two complex rectangular matrices, AB.
-
-        NRA — Number of rows of A.   (Input)
-        NCA — Number of columns of A.   (Input)
-        A — Complex NRA by NCA rectangular matrix.   (Input)
-        LDA — Leading dimension of A exactly as specified in the dimension statement of the calling program.   (Input)
-        NRB — Number of rows of B.   (Input)
-        NRB must be equal to NCA.
-        NCB — Number of columns of B.   (Input)
-        B — Complex NRB by NCB rectangular matrix.   (Input)
-        LDB — Leading dimension of B exactly as specified in the dimension statement of the calling program.   (Input)
-        NRC — Number of rows of C.   (Input)
-        NRC must be equal to NRA.
-        NCC — Number of columns of C.   (Input)
-        NCC must be equal to NCB.
-        C — Complex NRC by NCC rectangular matrix containing the product A * B.   (Output)
-        LDC — Leading dimension of C exactly as specified in the dimension statement of the calling program.   (Input)
-    """
-    return np.matmul(A, B)
-
-
 def DEVLCG(A):
     """
     Compute all of the eigenvalues of a complex matrix.
@@ -816,27 +772,27 @@ def DLFDCG(A):
     return np.linalg.det(A)
 
 
-def DLINCG(N, A):
-    """ !!! SCALE FIRST TO 1/N !!!
-    Compute the inverse of a complex general matrix.
-
-        N — Order of the matrix A.   (Input)
-        A — Complex N by N matrix containing the matrix to be inverted.   (Input)
-        LDA — Leading dimension of A exactly as specified in the dimension statement of the calling program.   (Input)
-        AINV — Complex N by N matrix containing the inverse of A.   (Output)
-        If A is not needed, A and AINV can share the same storage locations.
-        LDAINV — Leading dimension of AINV exactly as specified in the dimension statement of the calling program.   (Input)
+def DMRRRR(A, B):
     """
-    # if N == True:
-    #     A = A*1/N
+    Multiply two real rectangular matrices, AB.
 
-    try:
-        OUT = np.linalg.inv(A)
-    except:
-        OUT = np.linalg.pinv(A)
-
-    return OUT
-
+        NRA — Number of rows of A.   (Input)
+        NCA — Number of columns of A.   (Input)
+        A — Real NRA by NCA matrix in full storage mode.   (Input)
+        LDA — Leading dimension of A exactly as specified in the dimension statement of the calling program.   (Input)
+        NRB — Number of rows of B.   (Input)
+        NRB must be equal to NCA.
+        NCB — Number of columns of B.   (Input)
+        B — Real NRB by NCB matrix in full storage mode.   (Input)
+        LDB — Leading dimension of B exactly as specified in the dimension statement of the calling program.   (Input)
+        NRC — Number of rows of C.   (Input)
+        NRC must be equal to NRA.
+        NCC — Number of columns of C.   (Input)
+        NCC must be equal to NCB.
+        C — Real NRC by NCC matrix containing the product AB in full storage mode.   (Output)
+        LDC — Leading dimension of C exactly as specified in the dimension statement of the calling program.   (Input)
+    """
+    return np.matmul(A, B)
 
 
 def DMUCRV(A, X):
@@ -857,6 +813,29 @@ def DMUCRV(A, X):
         Y — Complex vector of length NY containing the product A * X if IPATH is equal to 1 and the product trans(A) * X if IPATH is equal to 2.   (Output)
     """
     return np.matmul(A, X)
+
+
+def DMCRCR(A, B):
+    """
+    Multiply two complex rectangular matrices, AB.
+
+        NRA — Number of rows of A.   (Input)
+        NCA — Number of columns of A.   (Input)
+        A — Complex NRA by NCA rectangular matrix.   (Input)
+        LDA — Leading dimension of A exactly as specified in the dimension statement of the calling program.   (Input)
+        NRB — Number of rows of B.   (Input)
+        NRB must be equal to NCA.
+        NCB — Number of columns of B.   (Input)
+        B — Complex NRB by NCB rectangular matrix.   (Input)
+        LDB — Leading dimension of B exactly as specified in the dimension statement of the calling program.   (Input)
+        NRC — Number of rows of C.   (Input)
+        NRC must be equal to NRA.
+        NCC — Number of columns of C.   (Input)
+        NCC must be equal to NCB.
+        C — Complex NRC by NCC rectangular matrix containing the product A * B.   (Output)
+        LDC — Leading dimension of C exactly as specified in the dimension statement of the calling program.   (Input)
+    """
+    return np.matmul(A, B)
 
 
 def DLSLCG(A, X):
@@ -880,5 +859,23 @@ def DLSLCG(A, X):
     return OUT
 
 
-# Au = np.matmul(Z, Y)
-# Ai = np.matmul(Y, Z)
+def DLINCG(N, A):
+    """ !!! SCALE FIRST TO 1/N !!!
+    Compute the inverse of a complex general matrix.
+
+        N — Order of the matrix A.   (Input)
+        A — Complex N by N matrix containing the matrix to be inverted.   (Input)
+        LDA — Leading dimension of A exactly as specified in the dimension statement of the calling program.   (Input)
+        AINV — Complex N by N matrix containing the inverse of A.   (Output)
+        If A is not needed, A and AINV can share the same storage locations.
+        LDAINV — Leading dimension of AINV exactly as specified in the dimension statement of the calling program.   (Input)
+    """
+    # if N == True:
+    #     A = A*1/N
+
+    try:
+        OUT = np.linalg.inv(A)
+    except:
+        OUT = np.linalg.pinv(A)
+
+    return OUT
