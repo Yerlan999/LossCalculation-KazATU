@@ -37,65 +37,59 @@ counter = 1
 
 
 
-
-print(n)
-
+while True:
 
 
+    if k.the_end:
+        break
 
-# while True:
+    # UK1[0] = complex(UM1[k,n,0], UM2[k,n,0])
+    # UK1[1] = complex(UM1[k,n,1], UM2[k,n,1])
+    # UK1[2] = complex(UM1[k,n,2], UM2[k,n,2])
+    # UK1[3] = complex(0, 0)
+    # AIK1[0] = complex(AIM1[k,n,0], AIM2[k,n,0])
+    # AIK1[1] = complex(AIM1[k,n,1], AIM2[k,n,1])
+    # AIK1[2] = complex(AIM1[k,n,2], AIM2[k,n,2])
+    # AIK1[3] = complex(0, 0)
 
-
-#     if k.the_end:
-#         break
-
-#     UK1[0] = complex(UM1[k,n,0], UM2[k,n,0])
-#     UK1[1] = complex(UM1[k,n,1], UM2[k,n,1])
-#     UK1[2] = complex(UM1[k,n,2], UM2[k,n,2])
-#     UK1[3] = complex(0, 0)
-#     AIK1[0] = complex(AIM1[k,n,0], AIM2[k,n,0])
-#     AIK1[1] = complex(AIM1[k,n,1], AIM2[k,n,1])
-#     AIK1[2] = complex(AIM1[k,n,2], AIM2[k,n,2])
-#     AIK1[3] = complex(0, 0)
-
-#     if not (n.get_current_index() > 0) or (k.get_current_index() == 0 and PR.get_current_index() ==2):
-
-#         UK10=(UK1[0]+UK1[1]+UK1[2])/3
-#         UK11=(UK1[0]+UK1[1]*AL+UK1[2]*AL**2)/3
-#         UK12=(UK1[0]+UK1[1]*AL**2+UK1[2]*AL)/3
-#         SKU2=np.sqrt(UK12.real**2+UK12.imag**2)/np.sqrt(UK11.real**2+UK11.imag**2)*100
-#         SKU0=np.sqrt(UK10.real**2+UK10.imag**2)/np.sqrt(UK11.real**2+UK11.imag**2)*100
-#         UK1[0]=UK11
-#         UK1[1]=UK11*AL**2
-#         UK1[2]=UK11*AL
-#         AIK10=(AIK1[0]+AIK1[1]+AIK1[2])/3
-#         AIK11=(AIK1[0]+AIK1[1]*AL+AIK1[2]*AL**2)/3
-#         AIK12=(AIK1[0]+AIK1[1]*AL**2+AIK1[2]*AL)/3
-#         SKI2=np.sqrt(AIK12.real**2+AIK12.imag**2)/np.sqrt(AIK11.real**2+AIK11.imag**2)*100
-#         SKI0=np.sqrt(AIK10.real**2+AIK10.imag**2)/np.sqrt(AIK11.real**2+AIK11.imag**2)*100
-#         AIK1[1]=AIK11
-#         AIK1[2]=AIK11*AL**2
-#         AIK1[3]=AIK11*AL
+    if not (n.get_current_index() > 0) or (k.get_current_index() == 0 and PR.get_current_index() ==2):
+        pass
+        # UK10=(UK1[0]+UK1[1]+UK1[2])/3
+        # UK11=(UK1[0]+UK1[1]*AL+UK1[2]*AL**2)/3
+        # UK12=(UK1[0]+UK1[1]*AL**2+UK1[2]*AL)/3
+        # SKU2=np.sqrt(UK12.real**2+UK12.imag**2)/np.sqrt(UK11.real**2+UK11.imag**2)*100
+        # SKU0=np.sqrt(UK10.real**2+UK10.imag**2)/np.sqrt(UK11.real**2+UK11.imag**2)*100
+        # UK1[0]=UK11
+        # UK1[1]=UK11*AL**2
+        # UK1[2]=UK11*AL
+        # AIK10=(AIK1[0]+AIK1[1]+AIK1[2])/3
+        # AIK11=(AIK1[0]+AIK1[1]*AL+AIK1[2]*AL**2)/3
+        # AIK12=(AIK1[0]+AIK1[1]*AL**2+AIK1[2]*AL)/3
+        # SKI2=np.sqrt(AIK12.real**2+AIK12.imag**2)/np.sqrt(AIK11.real**2+AIK11.imag**2)*100
+        # SKI0=np.sqrt(AIK10.real**2+AIK10.imag**2)/np.sqrt(AIK11.real**2+AIK11.imag**2)*100
+        # AIK1[1]=AIK11
+        # AIK1[2]=AIK11*AL**2
+        # AIK1[3]=AIK11*AL
 
 
 
+    print(counter); counter +=1
+    # RASCHET(k, n)
 
-#     RASCHET(k, n)
 
+    if k.get_current_index() == 0 and PR.get_current_index() == 1:
+        pass
+    if k.get_current_index() == 0 and PR.get_current_index() == 2:
+        pass
+    if k.get_current_index() == 0 and PR.get_current_index() == 1:
+        PR.step_up_index()
+        continue
+    if PR.get_current_index() == 2:
+        PR.set_current_index(0)
 
-#     if k.get_current_index() == 0 and PR.get_current_index() == 1:
-#         pass
-#     if k.get_current_index() == 0 and PR.get_current_index() == 2:
-#         pass
-#     if k.get_current_index() == 0 and PR.get_current_index() == 1:
-#         PR.step_up_index()
-#         continue
-#     if PR.get_current_index() == 2:
-#         PR.set_current_index(0)
-
-#     if n.the_end:
-#         k.step_up_index()
-#         n.set_current_index(0)
-#     else:
-#         n.step_up_index()
+    if n.the_end:
+        k.step_up_index()
+        n.set_current_index(0)
+    else:
+        n.step_up_index()
 
