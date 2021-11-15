@@ -10,10 +10,11 @@ next_outer = False
 
 update_inner = True
 
-inner_loop = 50 # k
-outer_loop = 560 # n
+inner_loop = 50 # n
+outer_loop = 560 # k
 PR = 0
 
+counter = 1
 
 while True:
 
@@ -22,12 +23,14 @@ while True:
     if k == outer_loop:
         break
 
-    print("Outer,  Inner, PR: ", n, k, PR, update_inner)
+    # print("Outer,  Inner, PR: ", n, k, PR, update_inner)
 
     # [block-1]
+    print(counter); counter+=1
+
 
     if (k > 0) or (k == 0 and PR ==2):
-        pass
+        x = 0
 
         # [block-2]
 
