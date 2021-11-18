@@ -9,7 +9,7 @@ class LoopI():
     def step_up_index(self):
         if self.current_index < self.stop:
             self.current_index += 1
-            self.the_end = False
+            # self.the_end = False
             if self.current_index == self.stop:
                 self.the_end = True
 
@@ -27,30 +27,51 @@ class LoopI():
             self.the_end = True
 
 
-n = LoopI(0, 50) # OUTER LOOP
-k = LoopI(0, 560) # INNTER LOOP
-PR = LoopI(0, 5000000)
-counter = 1
+# def mess_the_loop(reloop=False):
+#     nonlocal PR, k, n
+#     if reloop:
+#         PR.step_up_index()
+#     else:
+#         if PR.get_current_index() == 2:
+#             PR.set_current_index(1) # or 1 XZ
 
+#         if k.the_end:
+#             n.step_up_index()
+#             k.set_current_index(0)
+#         else:
+#             k.step_up_index()
+
+
+
+
+k = LoopI(0, 49) # INNER LOOP
+n = LoopI(0, 560) # OUTER LOOP
+PR = LoopI(1, 5)
+counter = 1
+# PR.step_up_index()
 
 
 while True:
 
 
-    if k.the_end:
+    if n.the_end:
         break
 
-    # UK1[0] = complex(UM1[k,n,0], UM2[k,n,0])
-    # UK1[1] = complex(UM1[k,n,1], UM2[k,n,1])
-    # UK1[2] = complex(UM1[k,n,2], UM2[k,n,2])
+    K = k.get_current_index(); N = n.get_current_index();
+
+    # UK1[0] = complex(UM1[N,K,0], UM2[N,K,0])
+    # UK1[1] = complex(UM1[N,K,1], UM2[N,K,1])
+    # UK1[2] = complex(UM1[N,K,2], UM2[N,K,2])
     # UK1[3] = complex(0, 0)
-    # AIK1[0] = complex(AIM1[k,n,0], AIM2[k,n,0])
-    # AIK1[1] = complex(AIM1[k,n,1], AIM2[k,n,1])
-    # AIK1[2] = complex(AIM1[k,n,2], AIM2[k,n,2])
+    # AIK1[0] = complex(AIM1[N,K,0], AIM2[N,K,0])
+    # AIK1[1] = complex(AIM1[N,K,1], AIM2[N,K,1])
+    # AIK1[2] = complex(AIM1[N,K,2], AIM2[N,K,2])
     # AIK1[3] = complex(0, 0)
 
-    if not (n.get_current_index() > 0) or (k.get_current_index() == 0 and PR.get_current_index() ==2):
-        print(counter); counter+=1
+
+    if not (k.get_current_index() > 0) or (k.get_current_index() == 0 and PR.get_current_index() == 2):
+        # print(counter); counter+=1
+        pass
         # UK10=(UK1[0]+UK1[1]+UK1[2])/3
         # UK11=(UK1[0]+UK1[1]*AL+UK1[2]*AL**2)/3
         # UK12=(UK1[0]+UK1[1]*AL**2+UK1[2]*AL)/3
@@ -70,24 +91,27 @@ while True:
 
 
 
-    # print("OUNTER, INNER", k.get_current_index(), n.get_current_index())
+    # print(n.get_current_index(), k.get_current_index())
     # print(counter); counter+=1
-    # RASCHET(k, n)
+    # RASCHET(N, K)
 
 
     if k.get_current_index() == 0 and PR.get_current_index() == 1:
-        pass
+        x=0
+        # PPR1[N]=PP1
     if k.get_current_index() == 0 and PR.get_current_index() == 2:
-        pass
+        x=0
+        # PPR2[N]=PP2
     if k.get_current_index() == 0 and PR.get_current_index() == 1:
         PR.step_up_index()
         continue
-    if PR.get_current_index() == 2:
-        PR.set_current_index(0)
 
-    if n.the_end:
-        k.step_up_index()
-        n.set_current_index(0)
-    else:
+    if PR.get_current_index() == 2:
+        PR.set_current_index(1)
+
+    if k.the_end:
         n.step_up_index()
+        k.set_current_index(0)
+    else:
+        k.step_up_index()
 
