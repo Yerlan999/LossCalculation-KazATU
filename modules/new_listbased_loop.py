@@ -27,12 +27,49 @@ class LoopI():
             self.the_end = True
 
 
-n = LoopI(0, 50) # OUTER LOOP
+class LoopIList():
+
+    def __init__(self, start, stop):
+        self.start = start
+        self.stop = stop
+        self.sequence = [ i for i in range(stop)]
+        self.sequence.insert(0, self.sequence[0])
+        self.current_index = self.start
+        self.the_end = False
+
+    def step_up_index(self):
+        if self.current_index < self.stop:
+            self.current_index += 1
+            self.the_end = False
+            if self.current_index == self.stop:
+                self.the_end = True
+
+    def get_current_indexS(self):
+        return self.sequence[self.current_index]
+
+    def get_current_index(self):
+        return self.current_index
+
+    def set_current_index(self, value):
+        if value < self.stop:
+            self.current_index = value
+            self.the_end = False
+        elif value == self.stop:
+            self.current_index = value
+            self.the_end = True
+        else:
+            self.the_end = True
+
+
+n = LoopIList(0, 50) # OUTER LOOP
 k = LoopI(0, 560) # INNTER LOOP
-PR = LoopI(0, 5000000)
+PR = LoopIList(0, 5000000)
 counter = 1
 
+# n.step_up_index()
+# n.step_up_index()
 
+# print(n.get_current_index())
 
 while True:
 
@@ -50,7 +87,8 @@ while True:
     # AIK1[3] = complex(0, 0)
 
     if not (n.get_current_index() > 0) or (k.get_current_index() == 0 and PR.get_current_index() ==2):
-        print(counter); counter+=1
+        # print(counter); counter+=1
+        pass
         # UK10=(UK1[0]+UK1[1]+UK1[2])/3
         # UK11=(UK1[0]+UK1[1]*AL+UK1[2]*AL**2)/3
         # UK12=(UK1[0]+UK1[1]*AL**2+UK1[2]*AL)/3
@@ -70,7 +108,7 @@ while True:
 
 
 
-    # print("OUNTER, INNER", k.get_current_index(), n.get_current_index())
+    # print("OUNTER, INNER", k.get_current_index(), n.get_current_indexS())
     # print(counter); counter+=1
     # RASCHET(k, n)
 

@@ -505,6 +505,41 @@ class LoopI():
             self.the_end = True
 
 
+class LoopIList():
+
+    def __init__(self, start, stop):
+        self.start = start
+        self.stop = stop
+        self.sequence = [ i for i in range(stop)]
+        self.sequence.insert(0, self.sequence[0])
+        self.current_index = self.start
+        self.the_end = False
+
+    def step_up_index(self):
+        if self.current_index < self.stop:
+            self.current_index += 1
+            self.the_end = False
+            if self.current_index == self.stop:
+                self.the_end = True
+
+    def get_current_indexS(self):
+        return self.sequence[self.current_index]
+
+    def get_current_index(self):
+        return self.current_index
+
+    def set_current_index(self, value):
+        if value < self.stop:
+            self.current_index = value
+            self.the_end = False
+        elif value == self.stop:
+            self.current_index = value
+            self.the_end = True
+        else:
+            self.the_end = True
+
+
+
 # Класс для рабочих методов для получения значении с файла
 class PhaseHolder():
 
