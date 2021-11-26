@@ -841,6 +841,8 @@ def DMUCRV(A, X):
         NY must be equal to NRA if IPATH is equal to 1. NY must be equal to NCA if IPATH is equal to 2.
         Y — Complex vector of length NY containing the product A * X if IPATH is equal to 1 and the product trans(A) * X if IPATH is equal to 2.   (Output)
     """
+    if A.shape[0] != X.shape[0] and A.shape[1] != X.shape[0]:
+        X = X[:4]
     return np.matmul(A, X)
 
 
@@ -908,3 +910,16 @@ def DLINCG(N, A):
         OUT = np.linalg.pinv(A)
 
     return OUT
+
+def debug(name, variable):
+    print(name + " with shape and type: ", variable.shape , variable.dtype)
+    try:
+        for arr in variable:
+            for item in arr:
+                print(item.real)
+                print(item.imag)
+                print()
+    except:
+        print(arr.real)
+        print(arr.imag)
+        print()
