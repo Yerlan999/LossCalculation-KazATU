@@ -915,11 +915,16 @@ def debug(name, variable):
     print(name + " with shape and type: ", variable.shape , variable.dtype)
     try:
         for arr in variable:
-            for item in arr:
-                print(item.real)
-                print(item.imag)
+            try:
+                for item in arr:
+                    print(item.real)
+                    print(item.imag)
+                    print()
+            except:
+                print(arr.real)
+                print(arr.imag)
                 print()
     except:
-        print(arr.real)
-        print(arr.imag)
+        print(variable.real)
+        print(variable.imag)
         print()
