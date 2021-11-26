@@ -917,14 +917,26 @@ def debug(name, variable):
         for arr in variable:
             try:
                 for item in arr:
-                    print(item.real)
-                    print(item.imag)
-                    print()
+                    if type(item) == complex:
+                        print(item.real)
+                        print(item.imag)
+                        print()
+                    else:
+                        print(item)
+                        print()
             except:
-                print(arr.real)
-                print(arr.imag)
-                print()
+                if type(arr) == complex:
+                    print(arr.real)
+                    print(arr.imag)
+                    print()
+                else:
+                    print(arr)
+                    print()
     except:
-        print(variable.real)
-        print(variable.imag)
-        print()
+        if type(variable) == complex:
+            print(variable.real)
+            print(variable.imag)
+            print()
+        else:
+            print(variable)
+            print()
