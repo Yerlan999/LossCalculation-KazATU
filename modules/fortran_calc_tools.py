@@ -764,7 +764,8 @@ def DLFTCG(A):
         LDFAC — Leading dimension of FAC exactly as specified in the dimension statement of the calling program.   (Input)
         IPVT — Vector of length N containing the pivoting information for the LU factorization.   (Output)
     """
-    return lu_factor(A)[0]
+    p, l, u = lu(A)
+    return l * u
 
 
 def LFSCG(FAC, IPVT, B):
@@ -912,7 +913,10 @@ def DLINCG(N, A):
     return OUT
 
 def debug(name, variable):
-    print(name + " with shape and type: ", variable.shape , variable.dtype)
+    try:
+        print(name + " with shape and type: ", variable.shape , variable.dtype)
+    except:
+        print(name)
     try:
         for arr in variable:
             try:
