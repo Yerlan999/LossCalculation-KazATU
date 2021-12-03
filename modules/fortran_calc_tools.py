@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from numpy import linalg as LA
 from scipy.linalg import logm, expm, sqrtm, eig, lu, lu_factor, lu_solve
 import pandas as pd
@@ -913,13 +914,14 @@ def DLINCG(N, A):
     return OUT
 
 def debug(name, variable):
-    try:
+    if "shape" in dir(variable):
         print(name + " with shape and type: ", variable.shape , variable.dtype)
-    except:
+    else:
         print(name)
-    try:
+
+    if isinstance(variable, Iterable):
         for arr in variable:
-            try:
+            if isinstance(arr, Iterable):
                 for item in arr:
                     if type(item) == complex:
                         print(item.real)
@@ -928,7 +930,7 @@ def debug(name, variable):
                     else:
                         print(item)
                         print()
-            except:
+            else:
                 if type(arr) == complex:
                     print(arr.real)
                     print(arr.imag)
@@ -936,7 +938,7 @@ def debug(name, variable):
                 else:
                     print(arr)
                     print()
-    except:
+    else:
         if type(variable) == complex:
             print(variable.real)
             print(variable.imag)
@@ -944,3 +946,16 @@ def debug(name, variable):
         else:
             print(variable)
             print()
+
+def debug_rowfirst(name, variable):
+    if "shape" in dir(variable):
+        print(name + " with shape and type: ", variable.shape , variable.dtype)
+        rows, cols = variable.shape
+    else:
+        print(name)
+
+    for j in range(cols):
+        for i in range(rows):
+            print(variable[i,j])
+
+
