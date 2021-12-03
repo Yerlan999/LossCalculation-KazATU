@@ -765,8 +765,12 @@ def DLFTCG(A):
         LDFAC — Leading dimension of FAC exactly as specified in the dimension statement of the calling program.   (Input)
         IPVT — Vector of length N containing the pivoting information for the LU factorization.   (Output)
     """
+
+    # old version
+    FAC = lu_factor(A)[0]
+    # new version
     p, l, u = lu(A)
-    return l * u
+    return FAC
 
 
 def LFSCG(FAC, IPVT, B):
@@ -913,49 +917,52 @@ def DLINCG(N, A):
 
     return OUT
 
-def debug(name, variable):
-    if "shape" in dir(variable):
-        print(name + " with shape and type: ", variable.shape , variable.dtype)
-    else:
-        print(name)
 
-    if isinstance(variable, Iterable):
-        for arr in variable:
-            if isinstance(arr, Iterable):
-                for item in arr:
-                    if type(item) == complex:
-                        print(item.real)
-                        print(item.imag)
-                        print()
-                    else:
-                        print(item)
-                        print()
-            else:
-                if type(arr) == complex:
-                    print(arr.real)
-                    print(arr.imag)
-                    print()
-                else:
-                    print(arr)
-                    print()
-    else:
-        if type(variable) == complex:
-            print(variable.real)
-            print(variable.imag)
-            print()
+def debugging_tool(name, variable, rowfirst=True):
+    typeOfVar = None
+    if "shape" in dir(variable):
+        typeOfVar = "matrix"
+        shapeOfMat = 0
+        print(name + " with shape and type: ", variable.shape , variable.dtype)
+        if len(variable.shape) == 1:
+            shapeOfMat = 1
+            rows = variable.shape
+        elif len(variable.shape) == 2:
+            shapeOfMat = 2
+            rows, cols = variable.shape
         else:
-            print(variable)
-            print()
-
-def debug_rowfirst(name, variable):
-    if "shape" in dir(variable):
-        print(name + " with shape and type: ", variable.shape , variable.dtype)
-        rows, cols = variable.shape
+            shapeOfMat = 3
+            rows, cols, lays = variable.shape
     else:
-        print(name)
+        typeOfVar = "item"
 
-    for j in range(cols):
-        for i in range(rows):
-            print(variable[i,j])
 
+    if typeOfVar == "matrix":
+        if not shapeOfMat == 1:
+            if rowfirst:
+                if shapeOfMat == 2:
+                    for j in range(cols):
+                        for i in range(rows):
+                            print(variable[i,j])
+                else:
+                    for h in range(lays):
+                        for j in range(cols):
+                            for i in range(rows):
+                                print(variable[i,j,h])
+            else:
+                if shapeOfMat == 2:
+                    for row in variable:
+                        for item in row:
+                            print(item)
+                else:
+                    for layer in variable:
+                        for row in layer:
+                            for item in row:
+                                print(item)
+        else:
+            for item in variable:
+                        print(item)
+    else:
+        print(name + " with type: ", type(variable))
+        print(variable)
 
