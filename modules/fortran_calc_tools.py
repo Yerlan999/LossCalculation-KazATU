@@ -3,6 +3,7 @@ from numpy import linalg as LA
 from scipy.linalg import logm, expm, sqrtm, eig, lu, lu_factor, lu_solve
 import pandas as pd
 from itertools import tee
+from copy import deepcopy
 import numpy as np
 import scipy
 import math
@@ -750,7 +751,14 @@ def DEVLCG(A):
         LDA — Leading dimension of A exactly as specified in the dimension statement in the calling program.   (Input)
         EVAL —  Complex vector of length N containing the eigenvalues of A in decreasing order of magnitude.   (Output)
     """
-    return LA.eigvals(A)
+    ans = LA.eigvals(A)
+
+    if len(ans.shape) == 1:
+        (last,) = ans.shape
+
+    ans[last-1], ans[last-2] = ans[last-2], ans[last-1]
+
+    return ans
 
 
 def DLFTCG(A):
@@ -766,11 +774,16 @@ def DLFTCG(A):
         IPVT — Vector of length N containing the pivoting information for the LU factorization.   (Output)
     """
 
+    for row in A:
+        for item in row:
+            print(item)
+
     # old version
-    FAC = lu_factor(A)[0]
+    FAC = lu_factor(A)[0]    # , check_finite=Falses
     # new version
-    p, l, u = lu(A)
-    return FAC
+    # p, l, u = lu(A) # FAC = l*u
+
+    return signs_tuner(FAC)
 
 
 def LFSCG(FAC, IPVT, B):
@@ -913,26 +926,28 @@ def DLINCG(N, A):
     try:
         OUT = np.linalg.inv(A)
     except:
-        OUT = np.linalg.pinv(A)
+        OUT = np.linalg.pinv(A)   # , rcond=1e-40, hermitian=True
 
     return OUT
 
 
 def debugging_tool(name, variable, rowfirst=True):
     typeOfVar = None
-    if "shape" in dir(variable):
+    if "shape" in dir(variable) and len(variable.shape) > 0:
         typeOfVar = "matrix"
         shapeOfMat = 0
         print(name + " with shape and type: ", variable.shape , variable.dtype)
+
         if len(variable.shape) == 1:
             shapeOfMat = 1
             rows = variable.shape
         elif len(variable.shape) == 2:
             shapeOfMat = 2
             rows, cols = variable.shape
-        else:
+        elif len(variable.shape) == 3:
             shapeOfMat = 3
             rows, cols, lays = variable.shape
+
     else:
         typeOfVar = "item"
 
@@ -944,7 +959,7 @@ def debugging_tool(name, variable, rowfirst=True):
                     for j in range(cols):
                         for i in range(rows):
                             print(variable[i,j])
-                else:
+                if shapeOfMat == 3:
                     for h in range(lays):
                         for j in range(cols):
                             for i in range(rows):
@@ -954,15 +969,33 @@ def debugging_tool(name, variable, rowfirst=True):
                     for row in variable:
                         for item in row:
                             print(item)
-                else:
+                if shapeOfMat == 3:
                     for layer in variable:
                         for row in layer:
                             for item in row:
                                 print(item)
         else:
             for item in variable:
-                        print(item)
+                print(item)
     else:
         print(name + " with type: ", type(variable))
         print(variable)
 
+
+def signs_tuner(matrix):
+
+    for i, row in enumerate(matrix):
+        for j, item in enumerate(row):
+            if i == 0:
+                pass
+            elif i == 1:
+                if j == 0:
+                    matrix[i,j] = matrix[i,j]*-1
+            elif i == 2:
+                if j == 0 or j == 1:
+                    matrix[i,j] = matrix[i,j]*-1
+            elif i == 3:
+                if j == 0 or j == 1 or j == 2:
+                    matrix[i,j] = matrix[i,j]*-1
+
+    return matrix
