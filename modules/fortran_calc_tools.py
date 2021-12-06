@@ -760,8 +760,8 @@ def DEVLCG(A):
 
     return ans
 
-
 def DLFTCG(A):
+
     """
     Compute the LU factorization of a complex general matrix.
 
@@ -773,17 +773,18 @@ def DLFTCG(A):
         LDFAC — Leading dimension of FAC exactly as specified in the dimension statement of the calling program.   (Input)
         IPVT — Vector of length N containing the pivoting information for the LU factorization.   (Output)
     """
-
-    for row in A:
-        for item in row:
-            print(item)
+    # print()
+    # print("InFunction A1: ", A.shape, A.dtype)
+    # for row in A:
+    #     for item in row:
+    #         print(item)
 
     # old version
     FAC = lu_factor(A)[0]    # , check_finite=Falses
     # new version
-    # p, l, u = lu(A) # FAC = l*u
+    p, l, u = lu(A) # FAC = l*u
 
-    return signs_tuner(FAC)
+    return signs_tuner(FAC), l*u
 
 
 def LFSCG(FAC, IPVT, B):
