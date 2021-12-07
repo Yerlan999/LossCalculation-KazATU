@@ -742,7 +742,7 @@ def DLINRG(A):
     return np.linalg.inv(A)
 
 
-def DEVLCG(A):
+def DEVLCG(A, swap=False):
     """
     Compute all of the eigenvalues of a complex matrix.
 
@@ -753,10 +753,11 @@ def DEVLCG(A):
     """
     ans = LA.eigvals(A)
 
-    if len(ans.shape) == 1:
-        (last,) = ans.shape
+    if swap:
+        if len(ans.shape) == 1:
+            (last,) = ans.shape
 
-    ans[last-1], ans[last-2] = ans[last-2], ans[last-1]
+        ans[last-1], ans[last-2] = ans[last-2], ans[last-1]
 
     return ans
 
@@ -861,8 +862,8 @@ def DMUCRV(A, X):
         NY must be equal to NRA if IPATH is equal to 1. NY must be equal to NCA if IPATH is equal to 2.
         Y — Complex vector of length NY containing the product A * X if IPATH is equal to 1 and the product trans(A) * X if IPATH is equal to 2.   (Output)
     """
-    if A.shape[0] != X.shape[0] and A.shape[1] != X.shape[0]:
-        X = X[:4]
+    # if A.shape[0] != X.shape[0] and A.shape[1] != X.shape[0]:
+    #     X = X[:4]
     return np.matmul(A, X)
 
 
@@ -1000,3 +1001,16 @@ def signs_tuner(matrix):
                     matrix[i,j] = matrix[i,j]*-1
 
     return matrix
+
+
+def cosine(value):
+    return round(np.cos(value),6)
+
+def sine(value):
+    return round(np.sin(value),6)
+
+def squareroot(value):
+    return round(np.sqrt(value),5)
+
+def logarithm10(value):
+    return round(np.log10(value),6)
