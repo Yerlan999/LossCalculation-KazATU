@@ -904,10 +904,10 @@ def DLSLCG(A, X):
         X — Complex vector of length N containing the solution to the linear system.   (Output)
         If B is not needed, B and X can share the same storage locations.
     """
-    try:
-        OUT = np.linalg.inv(A).dot(X)
-    except:
-        OUT = np.linalg.pinv(A).dot(X)
+    # try:
+    # OUT = np.linalg.inv(A).dot(X)
+    # except:
+    OUT = np.linalg.pinv(A).dot(X)
     return OUT
 
 
@@ -925,10 +925,10 @@ def DLINCG(N, A):
     # if N == True:
     #     A = A*1/N
 
-    try:
-        OUT = np.linalg.inv(A)
-    except:
-        OUT = np.linalg.pinv(A)   # , rcond=1e-40, hermitian=True
+    # try:
+    # OUT = np.linalg.inv(A)
+    # except:
+    OUT = np.linalg.pinv(A)   # , rcond=1e-40, hermitian=True
 
     return OUT
 
