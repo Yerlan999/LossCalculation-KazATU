@@ -753,11 +753,11 @@ def DEVLCG(A, swap=False):
     """
     ans = LA.eigvals(A)
 
-    if swap:
-        if len(ans.shape) == 1:
-            (last,) = ans.shape
+    # if swap:
+    #     if len(ans.shape) == 1:
+    #         (last,) = ans.shape
 
-        ans[last-1], ans[last-2] = ans[last-2], ans[last-1]
+    #     ans[last-1], ans[last-2] = ans[last-2], ans[last-1]
 
     return ans
 
@@ -785,7 +785,7 @@ def DLFTCG(A):
     # new version
     p, l, u = lu(A) # FAC = l*u
 
-    return signs_tuner(FAC), l*u
+    return FAC, l*u
 
 
 def LFSCG(FAC, IPVT, B):
