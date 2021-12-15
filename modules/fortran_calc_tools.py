@@ -102,6 +102,8 @@ class Fazy():
 
     # Список для хранения объектов(наименовании) фаз и тросса
     spisok_provodov = []
+    spisok_faz = []
+    spisok_trossov = []
 
     """
     Для инициализации фаз и тросов вводятся следующие параметры в порядке упоминания
@@ -133,6 +135,20 @@ class Fazy():
     @classmethod
     def dobavit_provod(cls, faza):
         cls.spisok_provodov.append(faza)
+        if faza.name.startswith("Фаза"):
+            cls.spisok_faz.append(faza)
+        else:
+            cls.spisok_trossov.append(faza)
+
+
+    @classmethod
+    def obnulit_provoda(cls,):
+        if cls.spisok_provodov:
+            cls.spisok_provodov = []
+        if cls.spisok_faz:
+            cls.spisok_faz = []
+        if cls.spisok_trossov:
+            cls.spisok_trossov = []
 
     @classmethod
     def construc_matrices(cls):
