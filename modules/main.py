@@ -1,6 +1,7 @@
 import shutil, codecs, re, os, threading
 from time import sleep
 import os
+import pandas as pd
 from tkinter import *
 from tkinter import filedialog, messagebox, HORIZONTAL, END
 from tkinter.ttk import Progressbar
@@ -25,12 +26,10 @@ class MainTrackerClass():
         1: "pics/VL1.jpg",
         11: "pics/VL1_mir.jpg",
         2: "pics/VL2.jpg",
-        3: "pics/VL3.jpg",
     }
     xy_headers = ["X", "Y"]
 
     xyframe_label_dict = {
-        3 : ["T1","T2","A","B","C"],
         1 : ["T","A","B","C"],
         2 : ["T","A1","B1","C1","A2","B2","C2"],
     }
@@ -49,13 +48,11 @@ class MainTrackerClass():
     main_entry_list_names = [
 
         ("inp_name_podstans", "Наименование подстанции", "", ()),
-        ("inp_name_prisoedin", "Наименования присоед-ии", "", ()),
-        ("inp_kolich_prisoed", "Количество присоед.", "", ()),
         ("inp_dlina_linii", "Длина линии", 'dlina_edin_izmer', ("м", "км")),
         ("inp_kolich_izmer", "Количество измерении", "", ()),
         ("inp_interval_izmer", "Интервал измерении", 'inter_izmer_edin_izmer', ("сек", "мин")),
         ("inp_kolich_garmonik", "Количество гармоник", "", ()),
-        ("inp_napryazhen_linii", "Напряжение линии", 'naprzh_linii_edin_izmer', ("В", "кВ"))]
+    ]
 
     main_entry_list_vars = []
 
@@ -63,7 +60,6 @@ class MainTrackerClass():
 
         ('dlina_edin_izmer', 'км'),
         ('inter_izmer_edin_izmer', 'мин'),
-        ('naprzh_linii_edin_izmer', 'кВ'),
         ('gamma_edin_izmer', 'МСм/м'),
         ('pop_sech_edin_izmer', 'мм\u00b2')];
 
@@ -168,24 +164,18 @@ def subbmit_values(MainTrackerClass):
             excel_filepath_os = Path(excel_filepath)
 
             name_podstans = MainTrackerClass.main_entry_list_vars[0].get().strip()
-            name_prisoedin = MainTrackerClass.main_entry_list_vars[1].get().strip()
-            kolich_prisoed = float(MainTrackerClass.main_entry_list_vars[2].get())
-            dlina_linii = float(MainTrackerClass.main_entry_list_vars[3].get())
-            kolich_izmer = float(MainTrackerClass.main_entry_list_vars[4].get())
-            interval_izmer = float(MainTrackerClass.main_entry_list_vars[5].get())
-            kolich_garmonik = float(MainTrackerClass.main_entry_list_vars[6].get())
-            inp_napryazhen_linii = float(MainTrackerClass.main_entry_list_vars[7].get())
+            dlina_linii = float(MainTrackerClass.main_entry_list_vars[1].get())
+            kolich_izmer = float(MainTrackerClass.main_entry_list_vars[2].get())
+            interval_izmer = float(MainTrackerClass.main_entry_list_vars[3].get())
+            kolich_garmonik = float(MainTrackerClass.main_entry_list_vars[4].get())
 
 
             if MainTrackerClass.edin_imzer_list_vars[0].get() == "м":
                 dlina_linii = dlina_linii/1000
             if MainTrackerClass.edin_imzer_list_vars[1].get() == 'сек':
                 interval_izmer = interval_izmer/60
-            if MainTrackerClass.edin_imzer_list_vars[2].get() == "В":
-                inp_napryazhen_linii = inp_napryazhen_linii/1000
 
         except Exception as error:
-            print(error)
             messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введенных данных воздушной линии")
             main_entry_list_vars = None
             return
@@ -196,11 +186,8 @@ def subbmit_values(MainTrackerClass):
         if MainTrackerClass.current_image == 2:
             tx, ty, a1x, a1y, b1x, b1y, c1x, c1y, a2x, a2y, b2x, b2y, c2x, c2y =  MainTrackerClass.xy_grid_list
             list_of_xys = [tx, ty, a1x, a1y, b1x, b1y, c1x, c1y, a2x, a2y, b2x, b2y, c2x, c2y]
-        if MainTrackerClass.current_image == 3:
-            t1x, t1y, t2x, t2y, ax, ay, bx, by, cx, cy =  MainTrackerClass.xy_grid_list
-            list_of_xys = [t1x, t1y, t2x, t2y, ax, ay, bx, by, cx, cy]
+
         getted_list_xys = list(map(lambda e: e.get(), list_of_xys))
-        print(getted_list_xys)
 
         try:
             floated_list_xys = list(map(lambda e: float(e), getted_list_xys))
@@ -214,27 +201,28 @@ def subbmit_values(MainTrackerClass):
         # Unit conversions happens here
         try:
             floated_list_matprop = list(map(lambda e: float(e), getted_list_matprop))
-            if MainTrackerClass.edin_imzer_list_vars[3].get() == "кСм/м":
+            if MainTrackerClass.edin_imzer_list_vars[2].get() == "кСм/м":
                 floated_list_matprop[1] = floated_list_matprop[1]*10**3
                 floated_list_matprop[4] = floated_list_matprop[4]*10**3
-            if MainTrackerClass.edin_imzer_list_vars[3].get() == "См/м":
+            if MainTrackerClass.edin_imzer_list_vars[2].get() == "См/м":
                 floated_list_matprop[1] = floated_list_matprop[1]*10**6
                 floated_list_matprop[4] = floated_list_matprop[4]*10**6
 
-            if MainTrackerClass.edin_imzer_list_vars[4].get() == "м\u00b2":
+            if MainTrackerClass.edin_imzer_list_vars[3].get() == "м\u00b2":
                 floated_list_matprop[2] = floated_list_matprop[2]*10**6
                 floated_list_matprop[5] = floated_list_matprop[5]*10**6
-            if MainTrackerClass.edin_imzer_list_vars[4].get() == "см\u00b2":
+            if MainTrackerClass.edin_imzer_list_vars[3].get() == "см\u00b2":
                 floated_list_matprop[2] = floated_list_matprop[2]*100
                 floated_list_matprop[5] = floated_list_matprop[5]*100
         except:
             messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введенных данных для характеристик материала фазных проводов и троса")
             return
 
-        MainTrackerClass.current_frame.destroy()
+        MainTrackerClass.current_frame.pack_forget()
         MainTrackerClass.current_frame = None
 
         progress_frame = ttk.Frame(root)
+
         progress_frame.rowconfigure(list(range(0,50)), weight=1)
         progress_frame.columnconfigure(list(range(0,11)), weight=1)
 
@@ -246,11 +234,11 @@ def subbmit_values(MainTrackerClass):
         progress_frame.pack(side=BOTTOM, anchor=E, fill=BOTH, expand=True)
 
         # Clear all entries
-        for entry in MainTrackerClass.all_entries:
+        for entry in MainTrackerClass.all_entries + MainTrackerClass.xy_grid_list:
             try:
                 entry.delete(0, 'end')
-            except:
-                print("Something went wrong!")
+            except Exception as error:
+                print("Something went wrong!", error)
                 pass
         finishing_part(name_podstans)
         final_message = f"Результаты расчетов записаны в папке 'Результаты_{name_podstans}'"
@@ -260,8 +248,10 @@ def subbmit_values(MainTrackerClass):
         progress_bar.stop()
         progress_bar_label.destroy()
         progress_bar.destroy()
+        progress_frame.destroy()
         messagebox.showinfo(title="Расчет завершен!", message="Данные успешно обработаны!", detail=final_message)
-        root.destroy()
+        #root.destroy()
+        main_properties(MainTrackerClass)
 
     threading.Thread(target=submit_button).start()
 
@@ -284,14 +274,6 @@ def main_properties(main):
             ttk.Label(main_frame, text=label, width=25, anchor=CENTER, borderwidth=2, relief="groove").grid(row=i, column=0, sticky="EWNS")
             e=ttk.Entry(main_frame, width=40, textvariable=eval(variable)); e.grid(row=i, column=1, columnspan=2, sticky="EWNS")
             MainTrackerClass.all_entries.append(e)
-        elif i == 2:
-            ttk.Label(main_frame, text=label, width=25, anchor=CENTER, borderwidth=2, relief="groove").grid(row=i, column=0, sticky="EWNS")
-            eb=ttk.Entry(main_frame, width=40, textvariable=eval(variable)); eb.grid(row=i, column=1, columnspan=2, sticky="EWNS")
-            MainTrackerClass.all_entries.append(eb)
-            if not eb.get():
-                eb.insert(0, 'Каждую через ","')
-            eb.bind('<Button-1>', on_click)
-            on_click_id = eb.bind('<Button-1>', on_click)
         elif ed_iz:
             ttk.Label(main_frame, text=label, width=25, anchor=CENTER, borderwidth=2, relief="groove").grid(row=i, column=0, sticky="EWNS")
             e=ttk.Entry(main_frame, width=40, validate="key", validatecommand=vcmd, textvariable=eval(variable)); e.grid(row=i, column=1, columnspan=2, sticky="EWNS")
@@ -391,24 +373,13 @@ def draw_picture(canvas):
     xy_frame.mainloop()
 
 
-def type_razche(xy_frame):
-        if inp_faza_razshep.get():
-            r1=ttk.Radiobutton(xy_frame, text="(2) Двойная", value=1, variable=inp_type_razchep); r1.grid(row=11, column=1, columnspan=3, sticky="WNS")
-            r2=ttk.Radiobutton(xy_frame, text="(3) Треугольник", value=2, variable=inp_type_razchep); r2.grid(row=12, column=1, columnspan=3, sticky="WNS")
-            r3=ttk.Radiobutton(xy_frame, text="(4) Квардрат", value=3, variable=inp_type_razchep); r3.grid(row=13, column=1, columnspan=3, sticky="WNS")
-            MainTrackerClass.rad_but_list = [r1, r2, r3]
-        else:
-            for rad_but in MainTrackerClass.rad_but_list:
-                rad_but.destroy()
-
-
 
 def xy_properties(main):
     global canvas
+
     if MainTrackerClass.current_frame:
         MainTrackerClass.current_frame.pack_forget()
     MainTrackerClass.current_frame = xy_frame
-
 
     ttk.Label(xy_frame, text="Характеристика опор", width=75, anchor=CENTER, borderwidth=2, relief="groove", font=('Helvetica', 13)).grid(row=0, column=0, columnspan=4, sticky="EWNS")
 
@@ -421,12 +392,6 @@ def xy_properties(main):
     MainTrackerClass.mirror_button["state"] = "disabled"
 
     ttk.Label(xy_frame, text="Тип опоры", width=25, anchor=CENTER, borderwidth=2, relief="groove").grid(row=10, column=0, columnspan=1, sticky="EWNS")
-
-    ttk.Checkbutton(xy_frame, text="Фаза разщеплена",
-                 onvalue = True, offvalue = False,
-                 variable=inp_faza_razshep,
-                 command = lambda: type_razche(xy_frame), cursor='hand2'
-                ).grid(row=10, column=1, columnspan=3, sticky="WNSE")
 
 
     def resize_bg(event):
@@ -444,11 +409,56 @@ def xy_properties(main):
 
     ttk.Radiobutton(xy_frame, text="Одноцепная промежуточная", variable=frame, value=1, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=11, column=0, sticky="WNS")
     ttk.Radiobutton(xy_frame, text="Двухцепная промежуточная", variable=frame, value=2, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=12, column=0, sticky="WNS")
-    ttk.Radiobutton(xy_frame, text="Портальная промежуточная", variable=frame, value=3, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=13, column=0, sticky="WNS")
 
     def fileinput():
         filename = filedialog.askopenfilename(filetypes=[("Файлы EXCEL", ".xlsx .xls"), ("Все файлы","*.*")])
         excel_filepath.insert(END, filename)
+
+        def read_excel(excel_filepath, xy_frame):
+            progress_frame = ttk.Frame(root)
+
+            progress_frame.rowconfigure(list(range(0,50)), weight=1)
+            progress_frame.columnconfigure(list(range(0,11)), weight=1)
+
+            progress_bar = Progressbar(progress_frame, orient=HORIZONTAL, mode='indeterminate')
+            progress_bar.grid(row=20, column=3, columnspan=5, sticky="EWNS")
+            progress_bar_label = ttk.Label(progress_frame, text="Чтение файла...", anchor=CENTER, borderwidth=2, relief="groove")
+            progress_bar_label.grid(row=19, column=3, columnspan=5, sticky="EWNS")
+            progress_bar.start()
+            progress_frame.pack(side=BOTTOM, anchor=E, fill=BOTH, expand=True)
+
+            print(excel_filepath.get())
+            excel_file = pd.ExcelFile(excel_filepath.get())
+
+            dataframe = pd.read_excel(excel_file, excel_file.sheet_names[0], header=None)
+            label_started = dict()
+
+            label_count = 1;
+            for i, row in enumerate(dataframe.iloc[:,0]):
+                if type(row) == str:
+                    label_started[row] = i
+                else:
+                    continue
+
+            for i, item in enumerate(label_started.keys()):
+                label_started[item] -= i
+
+            prisoed_to_calc = StringVar()
+
+            label_excel = ttk.Label(xy_frame, text="Выбрать присоединение для расчета", width=25, anchor=CENTER, borderwidth=2, relief="groove")
+            label_excel.grid(row=15, column=0, sticky="EWNS", columnspan=4)
+
+            prises = list(label_started.keys())
+            prises.append("Все")
+
+            OptionMenu(xy_frame, prisoed_to_calc, *prises).grid(row=16, column=0, columnspan=4, sticky="EWNS")
+
+            progress_bar.stop()
+            progress_bar_label.destroy()
+            progress_bar.destroy()
+            progress_frame.destroy()
+
+        threading.Thread(target=read_excel, args=(excel_filepath, xy_frame)).start()
 
 
     label_excel = ttk.Label(xy_frame, text="Путь к EXCEL файлу", width=25, anchor=CENTER, borderwidth=2, relief="groove")
@@ -482,8 +492,7 @@ vcmd = (root.register(validate_numbers), "%i", "%P")
 frame = IntVar(); frame.set(0)
 previous_image = frame.get()
 
-inp_faza_razshep = BooleanVar()
-inp_type_razchep = IntVar()
+
 
 
 main_frame = ttk.Frame(root)
@@ -493,7 +502,7 @@ main_frame.columnconfigure(3, weight=0)
 
 
 xy_frame = ttk.Frame(root)
-xy_frame.rowconfigure(list(range(0,19)), weight=2)
+xy_frame.rowconfigure(list(range(0,18)), weight=2)
 xy_frame.columnconfigure(list(range(1,4)), weight=1)
 xy_frame.columnconfigure(0, weight=2)
 
@@ -538,4 +547,3 @@ excel_file_path = StringVar()
 
 root.mainloop()
 
-os.system("taskkill /F /IM python3.8.exe /T")
