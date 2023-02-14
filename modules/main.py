@@ -18,6 +18,8 @@ class MainTrackerClass():
     rad_but_list = []
     all_entries = []
     xy_labels = []
+    label_started = dict()
+    destroyables = []
 
     image_set = False
     current_image = None
@@ -217,6 +219,11 @@ def subbmit_values(MainTrackerClass):
         except:
             messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введенных данных для характеристик материала фазных проводов и троса")
             return
+
+
+        print()
+        print(MainTrackerClass.label_started[prisoed_to_calc.get()])
+        prisoed_to_calc.set('')
 
         MainTrackerClass.current_frame.pack_forget()
         MainTrackerClass.current_frame = None
@@ -433,17 +440,18 @@ def xy_properties(main):
             dataframe = pd.read_excel(excel_file, excel_file.sheet_names[0], header=None)
             label_started = dict()
 
-            label_count = 1;
+            label_count = 0;
             for i, row in enumerate(dataframe.iloc[:,0]):
                 if type(row) == str:
-                    label_started[row] = i
+                    label_count += 1;
+                    label_started[row] = [label_count, i]
                 else:
                     continue
 
             for i, item in enumerate(label_started.keys()):
-                label_started[item] -= i
+                label_started[item][1] -= i
 
-            prisoed_to_calc = StringVar()
+            MainTrackerClass.label_started = label_started
 
             label_excel = ttk.Label(xy_frame, text="Выбрать присоединение для расчета", width=25, anchor=CENTER, borderwidth=2, relief="groove")
             label_excel.grid(row=15, column=0, sticky="EWNS", columnspan=4)
@@ -544,6 +552,7 @@ for provod in MainTrackerClass.types_cables:
         MainTrackerClass.mat_var_list.append(eval(provod+character))
 
 excel_file_path = StringVar()
+prisoed_to_calc = StringVar()
 
 root.mainloop()
 
