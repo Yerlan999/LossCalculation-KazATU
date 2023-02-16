@@ -49,11 +49,8 @@ class MainTrackerClass():
 
     main_entry_list_names = [
 
-        ("inp_name_podstans", "Наименование подстанции", "", ()),
-        ("inp_dlina_linii", "Длина линии", 'dlina_edin_izmer', ("м", "км")),
-        ("inp_kolich_izmer", "Количество измерении", "", ()),
-        ("inp_interval_izmer", "Интервал измерении", 'inter_izmer_edin_izmer', ("сек", "мин")),
-        ("inp_kolich_garmonik", "Количество гармоник", "", ()),
+        ("inp_dlina_linii", "Длина линии", 'dlina_edin_izmer', ("м", "км")), # 1
+        ("inp_interval_izmer", "Интервал измерении", 'inter_izmer_edin_izmer', ("сек", "мин")), # 3
     ]
 
     main_entry_list_vars = []
@@ -74,8 +71,6 @@ class MainTrackerClass():
 
     list_of_frames = []
     current_frame = None
-
-    # excel_file_path = StringVar()
 
     mirror_button = None
     mirror_state = 1
@@ -132,25 +127,24 @@ def on_click(event):
 
 
 
-def finishing_part(name_podstans):
-    inp = name_podstans.strip().replace(" ", "_")
-    dir_to_check = f"Результаты_{inp}"
-    pa = Path(dir_to_check)
-    try:
-        if pa.is_dir():
-            os.chdir(dir_to_check)
-            with codecs.open(f"{dir_to_check.lower()}.txt", "w", "utf-16") as file:
-                text_message = u"Здесь будут результаты расчетов(графики) после того как я разберусь с 'Телеграфными уравнениями')))"
-                file.write(text_message + u"\n")
-        else:
-            os.mkdir(dir_to_check)
-            os.chdir(dir_to_check)
-            with codecs.open(f"{dir_to_check.lower()}.txt", "w", "utf-16") as file:
-                text_message = u"Здесь будут результаты расчетов(графики) после того как я разберусь с 'Телеграфными уравнениями')))"
-                file.write(text_message + u"\n")
-    finally:
-        os.chdir(Path("../"))
+def finishing_part(excel_filepath_os, dlina_linii, interval_izmer, current_image, floated_list_xys, floated_list_matprop, which_prisoed, pris_dict):
 
+    data_file_name = "temp_data.txt"
+
+    with open(data_file_name, "w") as data_file:
+        data_file.write(str(excel_filepath_os.name)+'\n')
+        data_file.write(str(dlina_linii)+'\n')
+        data_file.write(str(interval_izmer)+'\n')
+        data_file.write(str(len(pris_dict.keys()))+'\n')
+        data_file.write(str(which_prisoed)+'\n')
+
+        data_file.write(str(current_image)+'\n')
+
+        for rec in floated_list_matprop:
+            data_file.write(str(rec)+'\n')
+
+        for rec in floated_list_xys:
+            data_file.write(str(rec)+'\n')
 
 
 def subbmit_values(MainTrackerClass):
@@ -160,16 +154,18 @@ def subbmit_values(MainTrackerClass):
 
     def submit_button():
 
-        # Extracting and preprocessing user input
         try:
             excel_filepath = excel_file_path.get()
             excel_filepath_os = Path(excel_filepath)
+            which_prisoed = MainTrackerClass.label_started[prisoed_to_calc.get()][0]
+        except:
+            messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Укажите файл с данными и выберите наименование присоединения для которого производится расчет")
+            return
 
-            name_podstans = MainTrackerClass.main_entry_list_vars[0].get().strip()
-            dlina_linii = float(MainTrackerClass.main_entry_list_vars[1].get())
-            kolich_izmer = float(MainTrackerClass.main_entry_list_vars[2].get())
-            interval_izmer = float(MainTrackerClass.main_entry_list_vars[3].get())
-            kolich_garmonik = float(MainTrackerClass.main_entry_list_vars[4].get())
+        # Extracting and preprocessing user input
+        try:
+            dlina_linii = float(MainTrackerClass.main_entry_list_vars[0].get())
+            interval_izmer = float(MainTrackerClass.main_entry_list_vars[1].get())
 
 
             if MainTrackerClass.edin_imzer_list_vars[0].get() == "м":
@@ -185,10 +181,12 @@ def subbmit_values(MainTrackerClass):
         if MainTrackerClass.current_image == 1:
             tx, ty, ax, ay, bx, by, cx, cy =  MainTrackerClass.xy_grid_list
             list_of_xys = [tx, ty, ax, ay, bx, by, cx, cy]
-        if MainTrackerClass.current_image == 2:
+        elif MainTrackerClass.current_image == 2:
             tx, ty, a1x, a1y, b1x, b1y, c1x, c1y, a2x, a2y, b2x, b2y, c2x, c2y =  MainTrackerClass.xy_grid_list
             list_of_xys = [tx, ty, a1x, a1y, b1x, b1y, c1x, c1y, a2x, a2y, b2x, b2y, c2x, c2y]
-
+        else:
+            messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Введите данные о координатах фазных проводов и троса")
+            return
         getted_list_xys = list(map(lambda e: e.get(), list_of_xys))
 
         try:
@@ -221,10 +219,6 @@ def subbmit_values(MainTrackerClass):
             return
 
 
-        print()
-        print(MainTrackerClass.label_started[prisoed_to_calc.get()])
-        prisoed_to_calc.set('')
-
         MainTrackerClass.current_frame.pack_forget()
         MainTrackerClass.current_frame = None
 
@@ -247,8 +241,14 @@ def subbmit_values(MainTrackerClass):
             except Exception as error:
                 print("Something went wrong!", error)
                 pass
-        finishing_part(name_podstans)
-        final_message = f"Результаты расчетов записаны в папке 'Результаты_{name_podstans}'"
+        for label_des in MainTrackerClass.destroyables:
+            label_des.destroy()
+
+        prisoed_to_calc.set('')
+
+        finishing_part(excel_filepath_os, dlina_linii, interval_izmer, MainTrackerClass.current_image, floated_list_xys, floated_list_matprop, which_prisoed, MainTrackerClass.label_started)
+
+        final_message = f"Результаты расчетов записаны в файле-отчете"
 
 
         sleep(5) # EMULATING CALCULATION PROCESS
@@ -277,11 +277,7 @@ def main_properties(main):
 
     for i, (variable, label, var, ed_iz) in enumerate(MainTrackerClass.main_entry_list_names, start=1):
 
-        if i == 1:
-            ttk.Label(main_frame, text=label, width=25, anchor=CENTER, borderwidth=2, relief="groove").grid(row=i, column=0, sticky="EWNS")
-            e=ttk.Entry(main_frame, width=40, textvariable=eval(variable)); e.grid(row=i, column=1, columnspan=2, sticky="EWNS")
-            MainTrackerClass.all_entries.append(e)
-        elif ed_iz:
+        if ed_iz:
             ttk.Label(main_frame, text=label, width=25, anchor=CENTER, borderwidth=2, relief="groove").grid(row=i, column=0, sticky="EWNS")
             e=ttk.Entry(main_frame, width=40, validate="key", validatecommand=vcmd, textvariable=eval(variable)); e.grid(row=i, column=1, columnspan=2, sticky="EWNS")
             MainTrackerClass.all_entries.append(e)
@@ -292,23 +288,90 @@ def main_properties(main):
             MainTrackerClass.all_entries.append(e)
 
 
-    ttk.Label(main_frame, text="Характеристика проводов", width=55, anchor=CENTER, borderwidth=2, relief="groove", font=('Helvetica', 13)).grid(row=10, column=0, columnspan=4, sticky="EWNS")
+    ttk.Label(main_frame, text="Характеристика проводов", width=55, anchor=CENTER, borderwidth=2, relief="groove", font=('Helvetica', 13)).grid(row=3, column=0, columnspan=4, sticky="EWNS")
 
-    for i, mat_lab in enumerate(MainTrackerClass.mat_props, start=12):
+    for i, mat_lab in enumerate(MainTrackerClass.mat_props, start=5):
         ttk.Label(main_frame, text=mat_lab, width=15, anchor=CENTER, borderwidth=2, relief="groove").grid(row=i, column=0, sticky="EWNS")
 
 
     for i, mat_head in enumerate(MainTrackerClass.mat_headers, start=1):
-        ttk.Label(main_frame, text=mat_head, width=15, anchor=CENTER, borderwidth=2, relief="groove").grid(row=11, column=i, sticky="EWNS")
+        ttk.Label(main_frame, text=mat_head, width=15, anchor=CENTER, borderwidth=2, relief="groove").grid(row=4, column=i, sticky="EWNS")
 
     for j, provod in enumerate(MainTrackerClass.types_cables, start=1):
-        for i, character in enumerate(MainTrackerClass.mater_charac, start=12):
+        for i, character in enumerate(MainTrackerClass.mater_charac, start=5):
             me=ttk.Entry(main_frame, width=20, textvariable=eval(provod+character), validate="key", validatecommand=vcmd); me.grid(row=i, column=j, sticky="EWNS")
             MainTrackerClass.all_entries.append(me)
 
-    OptionMenu(main_frame, eval(MainTrackerClass.mat_edin_izmer[0][0]), *MainTrackerClass.mat_edin_izmer[0][1]).grid(row=13, column=3, sticky="EWNS")
-    OptionMenu(main_frame, eval(MainTrackerClass.mat_edin_izmer[1][0]), *MainTrackerClass.mat_edin_izmer[1][1]).grid(row=14, column=3, sticky="EWNS")
+    OptionMenu(main_frame, eval(MainTrackerClass.mat_edin_izmer[0][0]), *MainTrackerClass.mat_edin_izmer[0][1]).grid(row=6, column=3, sticky="EWNS")
+    OptionMenu(main_frame, eval(MainTrackerClass.mat_edin_izmer[1][0]), *MainTrackerClass.mat_edin_izmer[1][1]).grid(row=7, column=3, sticky="EWNS")
 
+    ttk.Label(main_frame, text="Данные измерении", width=55, anchor=CENTER, borderwidth=2, relief="groove", font=('Helvetica', 13)).grid(row=8, column=0, columnspan=4, sticky="EWNS")
+
+    def fileinput():
+        filename = filedialog.askopenfilename(filetypes=[("Файлы EXCEL", ".xlsx .xls"), ("Все файлы","*.*")])
+        excel_filepath.insert(END, filename)
+
+        def read_excel(excel_filepath, main_frame):
+
+            progress_frame = ttk.Frame(root)
+
+            progress_frame.rowconfigure(list(range(0,2)), weight=1)
+            progress_frame.columnconfigure(list(range(0,4)), weight=1)
+
+            progress_bar = Progressbar(main_frame, orient=HORIZONTAL, mode='indeterminate')
+            progress_bar.grid(row=12, column=0, columnspan=4, sticky="EWNS")
+            progress_bar_label = ttk.Label(main_frame, text="Чтение файла...", anchor=CENTER, borderwidth=2, relief="groove")
+            progress_bar_label.grid(row=11, column=0, columnspan=4, sticky="EWNS")
+            progress_bar.start()
+            # progress_frame.pack(side=BOTTOM, anchor=E, fill=BOTH, expand=True)
+
+            excel_file = pd.ExcelFile(excel_filepath.get())
+
+            dataframe = pd.read_excel(excel_file, excel_file.sheet_names[0], header=None)
+            label_started = dict()
+
+            label_count = 0;
+            for i, row in enumerate(dataframe.iloc[:,0]):
+                if type(row) == str:
+                    label_count += 1;
+                    label_started[row] = [label_count, i]
+                else:
+                    continue
+
+            for i, item in enumerate(label_started.keys()):
+                label_started[item][1] -= i
+
+            MainTrackerClass.label_started = label_started
+
+            label_excel = ttk.Label(main_frame, text="Выбрать присоединение для расчета", width=55, anchor=CENTER, borderwidth=2, relief="groove", font=('Helvetica', 13))
+            label_excel.grid(row=10, column=0, sticky="EWNS", columnspan=4)
+            MainTrackerClass.destroyables.append(label_excel)
+
+            prises = list(label_started.keys())
+
+            pris_option_menu = OptionMenu(main_frame, prisoed_to_calc, *prises)
+            pris_option_menu.grid(row=11, column=0, columnspan=4, sticky="EWNS")
+            MainTrackerClass.destroyables.append(pris_option_menu)
+
+            progress_bar.stop()
+            progress_bar_label.destroy()
+            progress_bar.destroy()
+            progress_frame.destroy()
+
+        threading.Thread(target=read_excel, args=(excel_filepath, main_frame)).start()
+
+
+    label_excel = ttk.Label(main_frame, text="Путь к EXCEL файлу", width=25, anchor=CENTER, borderwidth=2, relief="groove")
+    label_excel.grid(row=9, column=0, sticky="EWNS")
+
+    # MainTrackerClass.excel_file_path = StringVar()
+    excel_filepath = ttk.Entry(main_frame, width=5, textvariable=excel_file_path)
+    excel_filepath.grid(row=9, column=1, sticky="EWNS")
+    MainTrackerClass.all_entries.append(excel_filepath)
+
+
+    select_button_excel = ttk.Button(main_frame, text="Выбрать", command=fileinput, cursor='hand2')
+    select_button_excel.grid(row=9, column=2, columnspan=2, sticky="EWNS")
 
     main_frame.pack(side=TOP, anchor=E, fill=BOTH, expand=True)
 
@@ -417,72 +480,15 @@ def xy_properties(main):
     ttk.Radiobutton(xy_frame, text="Одноцепная промежуточная", variable=frame, value=1, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=11, column=0, sticky="WNS")
     ttk.Radiobutton(xy_frame, text="Двухцепная промежуточная", variable=frame, value=2, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=12, column=0, sticky="WNS")
 
-    def fileinput():
-        filename = filedialog.askopenfilename(filetypes=[("Файлы EXCEL", ".xlsx .xls"), ("Все файлы","*.*")])
-        excel_filepath.insert(END, filename)
-
-        def read_excel(excel_filepath, xy_frame):
-            progress_frame = ttk.Frame(root)
-
-            progress_frame.rowconfigure(list(range(0,50)), weight=1)
-            progress_frame.columnconfigure(list(range(0,11)), weight=1)
-
-            progress_bar = Progressbar(progress_frame, orient=HORIZONTAL, mode='indeterminate')
-            progress_bar.grid(row=20, column=3, columnspan=5, sticky="EWNS")
-            progress_bar_label = ttk.Label(progress_frame, text="Чтение файла...", anchor=CENTER, borderwidth=2, relief="groove")
-            progress_bar_label.grid(row=19, column=3, columnspan=5, sticky="EWNS")
-            progress_bar.start()
-            progress_frame.pack(side=BOTTOM, anchor=E, fill=BOTH, expand=True)
-
-            print(excel_filepath.get())
-            excel_file = pd.ExcelFile(excel_filepath.get())
-
-            dataframe = pd.read_excel(excel_file, excel_file.sheet_names[0], header=None)
-            label_started = dict()
-
-            label_count = 0;
-            for i, row in enumerate(dataframe.iloc[:,0]):
-                if type(row) == str:
-                    label_count += 1;
-                    label_started[row] = [label_count, i]
-                else:
-                    continue
-
-            for i, item in enumerate(label_started.keys()):
-                label_started[item][1] -= i
-
-            MainTrackerClass.label_started = label_started
-
-            label_excel = ttk.Label(xy_frame, text="Выбрать присоединение для расчета", width=25, anchor=CENTER, borderwidth=2, relief="groove")
-            label_excel.grid(row=15, column=0, sticky="EWNS", columnspan=4)
-
-            prises = list(label_started.keys())
-            prises.append("Все")
-
-            OptionMenu(xy_frame, prisoed_to_calc, *prises).grid(row=16, column=0, columnspan=4, sticky="EWNS")
-
-            progress_bar.stop()
-            progress_bar_label.destroy()
-            progress_bar.destroy()
-            progress_frame.destroy()
-
-        threading.Thread(target=read_excel, args=(excel_filepath, xy_frame)).start()
-
-
-    label_excel = ttk.Label(xy_frame, text="Путь к EXCEL файлу", width=25, anchor=CENTER, borderwidth=2, relief="groove")
-    label_excel.grid(row=14, column=0, sticky="EWNS")
-
-    # MainTrackerClass.excel_file_path = StringVar()
-    excel_filepath = ttk.Entry(xy_frame, width=5, textvariable=excel_file_path)
-    MainTrackerClass.all_entries.append(excel_filepath)
-    excel_filepath.grid(row=14, column=1, sticky="EWNS")
-
-    select_button_excel = ttk.Button(xy_frame, text="Выбрать", command=fileinput, cursor='hand2')
-    select_button_excel.grid(row=14, column=2, columnspan=2, sticky="EWNS")
-
     xy_frame.bind("<Configure>", resize_bg)
     xy_frame.pack(side=TOP, anchor=E, fill=BOTH, expand=True)
     xy_frame.mainloop()
+
+
+
+
+
+
 
 MainTrackerClass.image_set = False
 
@@ -499,12 +505,12 @@ vcmd = (root.register(validate_numbers), "%i", "%P")
 
 frame = IntVar(); frame.set(0)
 previous_image = frame.get()
-
+after_calc_finish = False;
 
 
 
 main_frame = ttk.Frame(root)
-main_frame.rowconfigure(list(range(0,17)), weight=2)
+main_frame.rowconfigure(list(range(0,13)), weight=2)
 main_frame.columnconfigure(list(range(0,4)), weight=1)
 main_frame.columnconfigure(3, weight=0)
 
@@ -553,6 +559,8 @@ for provod in MainTrackerClass.types_cables:
 
 excel_file_path = StringVar()
 prisoed_to_calc = StringVar()
+
+main_properties(MainTrackerClass)
 
 root.mainloop()
 
