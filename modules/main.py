@@ -3,6 +3,7 @@ from time import sleep
 import os
 import pandas as pd
 from tkinter import *
+import json
 from tkinter import filedialog, messagebox, HORIZONTAL, END
 from tkinter.ttk import Progressbar
 from PIL import ImageTk, Image
@@ -129,22 +130,24 @@ def on_click(event):
 
 def finishing_part(excel_filepath_os, dlina_linii, interval_izmer, current_image, floated_list_xys, floated_list_matprop, which_prisoed, pris_dict):
 
-    data_file_name = "temp_data.txt"
+    dict_to_json = {
+        "excel_filepath": excel_filepath_os.name,
+        "line_length": dlina_linii,
+        "record_frequency": interval_izmer,
+        "number_of_prisoeds": len(pris_dict.keys()),
+        "which_prisoed": which_prisoed,
+        "line_type": current_image,
 
-    with open(data_file_name, "w") as data_file:
-        data_file.write(str(excel_filepath_os.name)+'\n')
-        data_file.write(str(dlina_linii)+'\n')
-        data_file.write(str(interval_izmer)+'\n')
-        data_file.write(str(len(pris_dict.keys()))+'\n')
-        data_file.write(str(which_prisoed)+'\n')
+        "mat_prop_list": floated_list_matprop,
+        "spatial_config": floated_list_xys,
 
-        data_file.write(str(current_image)+'\n')
+    }
 
-        for rec in floated_list_matprop:
-            data_file.write(str(rec)+'\n')
+    json_object = json.dumps(dict_to_json, indent=4)
 
-        for rec in floated_list_xys:
-            data_file.write(str(rec)+'\n')
+    with open("temp_data.json", "w") as outfile:
+        outfile.write(json_object)
+
 
 
 def subbmit_values(MainTrackerClass):

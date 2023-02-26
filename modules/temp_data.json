@@ -1,0 +1,26 @@
+{
+    "excel_filepath": "Promzona.xlsx",
+    "line_length": 5.0,
+    "record_frequency": 2.5,
+    "number_of_prisoeds": 6,
+    "which_prisoed": 2,
+    "line_type": 1,
+    "mat_prop_list": [
+        8.0,
+        8.0,
+        8.0,
+        8.0,
+        8.0,
+        8.0
+    ],
+    "spatial_config": [
+        4.0,
+        4.0,
+        4.0,
+        4.0,
+        4.0,
+        4.0,
+        4.0,
+        4.0
+    ]
+}
