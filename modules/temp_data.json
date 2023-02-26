@@ -3,24 +3,25 @@
     "line_length": 5.0,
     "record_frequency": 2.5,
     "number_of_prisoeds": 6,
-    "which_prisoed": 2,
+    "which_prisoed": 1,
     "line_type": 1,
+    "groud_count": 5,
     "mat_prop_list": [
-        8.0,
-        8.0,
-        8.0,
-        8.0,
-        8.0,
-        8.0
+        1.0,
+        35.336,
+        150.0,
+        4000.0,
+        17.336,
+        50.0
     ],
     "spatial_config": [
-        4.0,
-        4.0,
-        4.0,
-        4.0,
-        4.0,
-        4.0,
-        4.0,
-        4.0
+        0.0,
+        19.0,
+        6.3,
+        19.0,
+        4.2,
+        25.0,
+        2.1,
+        28.0
     ]
 }
