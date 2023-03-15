@@ -122,6 +122,9 @@ def help_func():
 def validate_numbers(index, numbers):
     return globals()["pattern"].match(numbers) is not None
 
+def validate_numbers2(index, numbers):
+    return globals()["pattern2"].match(numbers) is not None
+
 def on_click(event):
     global eb, on_click_id
     eb.delete(0, END)
@@ -129,7 +132,7 @@ def on_click(event):
 
 
 
-def finishing_part(excel_filepath_os, dlina_linii, interval_izmer, current_image, floated_list_xys, floated_list_matprop, which_prisoed, pris_dict, kol_zazem):
+def finishing_part(excel_filepath_os, dlina_linii, interval_izmer, current_image, floated_list_xys, floated_list_matprop, which_prisoed, pris_dict, kol_zazem, tross_array_ints, prisoed_name):
 
     dict_to_json = {
         "excel_filepath": excel_filepath_os.name,
@@ -137,11 +140,13 @@ def finishing_part(excel_filepath_os, dlina_linii, interval_izmer, current_image
         "record_frequency": interval_izmer,
         "number_of_prisoeds": len(pris_dict.keys()),
         "which_prisoed": which_prisoed,
+        "prisoed_name": prisoed_name,
         "line_type": current_image,
         "groud_count": kol_zazem,
 
         "mat_prop_list": floated_list_matprop,
         "spatial_config": floated_list_xys,
+        "tross_config": tross_array_ints,
 
     }
 
@@ -163,6 +168,7 @@ def subbmit_values(MainTrackerClass):
             excel_filepath = excel_file_path.get()
             excel_filepath_os = Path(excel_filepath)
             which_prisoed = MainTrackerClass.label_started[prisoed_to_calc.get()][0]
+            prisoed_name = list(MainTrackerClass.label_started.keys())[which_prisoed-1]
         except:
             messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Укажите файл с данными и выберите наименование присоединения для которого производится расчет")
             return
@@ -223,6 +229,18 @@ def subbmit_values(MainTrackerClass):
             messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введенных данных для характеристик материала фазных проводов и троса")
             return
 
+        try:
+            tross_array = tross_config.get()
+            if MainTrackerClass.current_image == 1 and len(tross_array) != 16:
+                messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введеного массива учета грозозащитного троса. Для выбранного типа опоры элементов должно быть 16")
+                return
+            if MainTrackerClass.current_image == 2 and len(tross_array) != 28:
+                messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введеного массива учета грозозащитного троса. Для выбранного типа опоры элементов должно быть 28")
+                return
+            tross_array_ints = [int(i) for i in tross_array]
+        except:
+            messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введеного массива учета грозозащитного троса.")
+            return
 
         MainTrackerClass.current_frame.pack_forget()
         MainTrackerClass.current_frame = None
@@ -250,13 +268,16 @@ def subbmit_values(MainTrackerClass):
             label_des.destroy()
 
         prisoed_to_calc.set('')
+        tross_config.set('')
 
-        finishing_part(excel_filepath_os, dlina_linii, interval_izmer, MainTrackerClass.current_image, floated_list_xys, floated_list_matprop, which_prisoed, MainTrackerClass.label_started, kol_zazem)
+        finishing_part(excel_filepath_os, dlina_linii, interval_izmer, MainTrackerClass.current_image, floated_list_xys, floated_list_matprop, which_prisoed, MainTrackerClass.label_started, kol_zazem, tross_array_ints, prisoed_name)
 
-        final_message = f"Результаты расчетов записаны в файле-отчете"
+        final_message = f"Результаты расчетов записаны в файле: Отчет {prisoed_name}"
 
+        # result = os.system("calc.exe")
+        # print(result)
 
-        sleep(5) # EMULATING CALCULATION PROCESS
+        # sleep(5) # EMULATING CALCULATION PROCESS
         progress_bar.stop()
         progress_bar_label.destroy()
         progress_bar.destroy()
@@ -485,6 +506,10 @@ def xy_properties(main):
     ttk.Radiobutton(xy_frame, text="Одноцепная промежуточная", variable=frame, value=1, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=11, column=0, sticky="WNS")
     ttk.Radiobutton(xy_frame, text="Двухцепная промежуточная", variable=frame, value=2, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=12, column=0, sticky="WNS")
 
+    ttk.Label(xy_frame, text="Учет грозозащитного троса", width=75, anchor=CENTER, borderwidth=2, relief="groove", font=('Helvetica', 13)).grid(row=13, column=0, columnspan=4, sticky="EWNS")
+
+    ttk.Entry(xy_frame, textvariable=tross_config, validate="key", validatecommand=vcmd2).grid(row=14, column=0, columnspan=4, sticky="EWNS")
+
     xy_frame.bind("<Configure>", resize_bg)
     xy_frame.pack(side=TOP, anchor=E, fill=BOTH, expand=True)
     xy_frame.mainloop()
@@ -504,7 +529,9 @@ root.geometry("600x600+0+0")
 
 
 pattern = re.compile(r'^([\.\d]*)$')
+pattern2 = re.compile(r'^([01]*)$')
 vcmd = (root.register(validate_numbers), "%i", "%P")
+vcmd2 = (root.register(validate_numbers2), "%i", "%P")
 
 
 
@@ -512,7 +539,7 @@ frame = IntVar(); frame.set(0)
 previous_image = frame.get()
 after_calc_finish = False;
 
-
+tross_config = StringVar()
 
 main_frame = ttk.Frame(root)
 main_frame.rowconfigure(list(range(0,13)), weight=2)
