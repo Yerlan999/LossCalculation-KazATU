@@ -152,7 +152,7 @@ def finishing_part(excel_filepath_os, dlina_linii, interval_izmer, current_image
 
     json_object = json.dumps(dict_to_json, indent=4)
 
-    with open("temp_data.json", "w") as outfile:
+    with open("Введенные данные.json", "w") as outfile:
         outfile.write(json_object)
 
 
@@ -161,6 +161,10 @@ def subbmit_values(MainTrackerClass):
 
     answer = messagebox.askyesno(title="Расчет", message="Вы уверены что хотите произвести раcчет по указанным данным?")
     if answer == False: return;
+
+    if (not os.path.exists("./binary.exe")):
+        messagebox.showerror(title="Ошибка!", message="Не найден файл для проведения расчетов", detail="Проверьте наличие файла 'binary.exe' в директории прогрмаммы")
+        return
 
     def submit_button():
 
@@ -272,12 +276,10 @@ def subbmit_values(MainTrackerClass):
 
         finishing_part(excel_filepath_os, dlina_linii, interval_izmer, MainTrackerClass.current_image, floated_list_xys, floated_list_matprop, which_prisoed, MainTrackerClass.label_started, kol_zazem, tross_array_ints, prisoed_name)
 
-        final_message = f"Результаты расчетов записаны в файле: Отчет {prisoed_name}"
+        final_message = f"Результаты расчетов записаны в файле: Отчет_{prisoed_name}.txt"
 
-        # result = os.system("calc.exe")
-        # print(result)
+        # result = os.system("./binary.exe")
 
-        # sleep(5) # EMULATING CALCULATION PROCESS
         progress_bar.stop()
         progress_bar_label.destroy()
         progress_bar.destroy()
