@@ -162,7 +162,7 @@ def subbmit_values(MainTrackerClass):
     answer = messagebox.askyesno(title="Расчет", message="Вы уверены что хотите произвести раcчет по указанным данным?")
     if answer == False: return;
 
-    if (not os.path.exists("./binary.exe")):
+    if (not os.path.exists(".\\binary.exe")):
         messagebox.showerror(title="Ошибка!", message="Не найден файл для проведения расчетов", detail="Проверьте наличие файла 'binary.exe' в директории прогрмаммы")
         return
 
@@ -266,7 +266,7 @@ def subbmit_values(MainTrackerClass):
             try:
                 entry.delete(0, 'end')
             except Exception as error:
-                print("Something went wrong!", error)
+                # print("Something went wrong!", error)
                 pass
         for label_des in MainTrackerClass.destroyables:
             label_des.destroy()
@@ -276,9 +276,9 @@ def subbmit_values(MainTrackerClass):
 
         finishing_part(excel_filepath_os, dlina_linii, interval_izmer, MainTrackerClass.current_image, floated_list_xys, floated_list_matprop, which_prisoed, MainTrackerClass.label_started, kol_zazem, tross_array_ints, prisoed_name)
 
-        final_message = f"Результаты расчетов записаны в файле: Отчет_{prisoed_name}.txt"
+        final_message = f"Результаты расчетов записаны в папке: {prisoed_name}"
 
-        # result = os.system("./binary.exe")
+        result = os.system(".\\binary.exe")
 
         progress_bar.stop()
         progress_bar_label.destroy()
