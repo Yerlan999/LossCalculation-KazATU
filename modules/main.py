@@ -12,6 +12,7 @@ from tkinter import ttk
 from ttkthemes import ThemedTk
 import matplotlib.pyplot as plt
 import openpyxl
+import subprocess
 
 
 class MainTrackerClass():
@@ -300,9 +301,9 @@ def subbmit_values(MainTrackerClass):
 
         final_message = f"Результаты расчетов записаны в папке: {prisoed_name}"
 
-        result = os.system(".\\binary.exe") # 0 - если успешно
-
-        draw_graphs(prisoed_name)
+        result = subprocess.run([".\\binary.exe"], check=False, capture_output=False, shell=False)
+        if result.returncode == 0: # # 0 - если успешно
+            draw_graphs(prisoed_name)
 
         progress_bar.stop()
         progress_bar_label.destroy()
