@@ -10,7 +10,7 @@ from PIL import ImageTk, Image
 from pathlib import Path
 from tkinter import ttk
 from ttkthemes import ThemedTk
-
+import matplotlib.pyplot as plt
 
 class MainTrackerClass():
 
@@ -131,6 +131,22 @@ def on_click(event):
     eb.unbind('<Button-1>', on_click_id)
 
 
+def draw_graphs(prisoed_name):
+    os.chdir(prisoed_name)
+
+    current_df = pd.read_csv('Эпюра токов.csv').dropna(axis=1, how='all')
+    fig, axs = plt.subplots(len(current_df.columns), sharex=True, figsize=(20,20))
+    fig.suptitle('Эпюра токов')
+
+    for i, column_name in enumerate(current_df.columns):
+        axs[i].plot(current_df.loc[:,column_name])
+        axs[i].set_title(column_name)
+
+    plt.savefig('Эпюра токов.png')
+
+    os.chdir("..")
+
+
 
 def finishing_part(excel_filepath_os, dlina_linii, interval_izmer, current_image, floated_list_xys, floated_list_matprop, which_prisoed, pris_dict, kol_zazem, tross_array_ints, prisoed_name):
 
@@ -150,10 +166,10 @@ def finishing_part(excel_filepath_os, dlina_linii, interval_izmer, current_image
 
     }
 
-    json_object = json.dumps(dict_to_json, indent=4)
+    # json_object = json.dumps(dict_to_json, indent=4)
 
-    with open("Введенные данные.json", "w") as outfile:
-        outfile.write(json_object)
+    # with open("Введенные данные.json", "w") as outfile:
+    #     outfile.write(json_object)
 
 
 
@@ -162,11 +178,11 @@ def subbmit_values(MainTrackerClass):
     answer = messagebox.askyesno(title="Расчет", message="Вы уверены что хотите произвести раcчет по указанным данным?")
     if answer == False: return;
 
-    if (not os.path.exists(".\\binary.exe")):
-        messagebox.showerror(title="Ошибка!", message="Не найден файл для проведения расчетов", detail="Проверьте наличие файла 'binary.exe' в директории прогрмаммы")
-        return
-
     def submit_button():
+
+        if (not os.path.exists(".\\binary.exe")):
+            messagebox.showerror(title="Ошибка!", message="Не найден файл для проведения расчетов", detail="Проверьте наличие файла 'binary.exe' в директории прогрмаммы")
+            return
 
         try:
             excel_filepath = excel_file_path.get()
@@ -175,6 +191,10 @@ def subbmit_values(MainTrackerClass):
             prisoed_name = list(MainTrackerClass.label_started.keys())[which_prisoed-1]
         except:
             messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Укажите файл с данными и выберите наименование присоединения для которого производится расчет")
+            return
+
+        if (not os.path.exists(excel_filepath_os.name)):
+            messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail=f"Проверьте наличие excel файла '{excel_filepath_os.name}'' в директории прогрмаммы")
             return
 
         # Extracting and preprocessing user input
@@ -278,7 +298,9 @@ def subbmit_values(MainTrackerClass):
 
         final_message = f"Результаты расчетов записаны в папке: {prisoed_name}"
 
-        result = os.system(".\\binary.exe")
+        result = os.system(".\\binary.exe") # 0 - если успешно
+
+        draw_graphs(prisoed_name)
 
         progress_bar.stop()
         progress_bar_label.destroy()
