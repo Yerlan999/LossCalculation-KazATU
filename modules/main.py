@@ -11,6 +11,8 @@ from pathlib import Path
 from tkinter import ttk
 from ttkthemes import ThemedTk
 import matplotlib.pyplot as plt
+import openpyxl
+
 
 class MainTrackerClass():
 
@@ -166,10 +168,10 @@ def finishing_part(excel_filepath_os, dlina_linii, interval_izmer, current_image
 
     }
 
-    # json_object = json.dumps(dict_to_json, indent=4)
+    json_object = json.dumps(dict_to_json, indent=4)
 
-    # with open("Введенные данные.json", "w") as outfile:
-    #     outfile.write(json_object)
+    with open("Введенные данные.json", "w") as outfile:
+        outfile.write(json_object)
 
 
 
@@ -392,6 +394,8 @@ def main_properties(main):
                 label_started[item][1] -= i
 
             MainTrackerClass.label_started = label_started
+
+            print(MainTrackerClass.label_started)
 
             label_excel = ttk.Label(main_frame, text="Выбрать присоединение для расчета", width=55, anchor=CENTER, borderwidth=2, relief="groove", font=('Helvetica', 13))
             label_excel.grid(row=row_cout+7, column=0, sticky="EWNS", columnspan=4)

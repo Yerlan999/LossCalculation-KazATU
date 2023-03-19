@@ -6,10 +6,10 @@ block_cipher = None
 
 a = Analysis(
     ['main.py'],
-    pathex=[Path('C:/Users/Пользователь/Desktop/Yerlan/Projects/LossCalculation-KazATU/modules/main.py')],
+    pathex=[Path('C:/Users/Пользователь/Desktop/Compiling/main.py')],
     binaries=[],
     datas=[],
-    hiddenimports=[],
+    hiddenimports=['openpyxl', 'openpyxl.cell._writer'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -26,7 +26,7 @@ a.datas += [('VL1.jpg',Path('pics/VL1.jpg'), "DATA"),
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
-ic_p = Path('C:/Users/Пользователь/Desktop/Yerlan/Projects/LossCalculation-KazATU/modules/icon/icon.ico')
+ic_p = Path('C:/Users/Пользователь/Desktop/Compiling/icon/icon.ico')
 
 exe = EXE(
     pyz,
@@ -35,7 +35,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='main',
+    name='LossCalculationProgram',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
