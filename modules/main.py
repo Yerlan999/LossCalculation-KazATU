@@ -27,6 +27,7 @@ class MainTrackerClass():
 
     image_set = False
     current_image = None
+    columns_count = None
 
     all_images_paths = {
         1: "pics/VL1.jpg",
@@ -153,6 +154,8 @@ def draw_graphs(prisoed_name):
 
 def finishing_part(excel_filepath_os, dlina_linii, interval_izmer, current_image, floated_list_xys, floated_list_matprop, which_prisoed, pris_dict, kol_zazem, tross_array_ints, prisoed_name):
 
+    if current_image == 11: current_image = 1
+
     dict_to_json = {
         "excel_filepath": excel_filepath_os.name,
         "line_length": dlina_linii,
@@ -187,6 +190,7 @@ def subbmit_values(MainTrackerClass):
             messagebox.showerror(title="Ошибка!", message="Не найден файл для проведения расчетов", detail="Проверьте наличие файла 'binary.exe' в директории прогрмаммы")
             return
 
+        # Проверка введенных пользователем данных
         try:
             excel_filepath = excel_file_path.get()
             excel_filepath_os = Path(excel_filepath)
@@ -200,7 +204,6 @@ def subbmit_values(MainTrackerClass):
             messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail=f"Проверьте наличие excel файла '{excel_filepath_os.name}'' в директории прогрмаммы")
             return
 
-        # Extracting and preprocessing user input
         try:
             dlina_linii = float(MainTrackerClass.main_entry_list_vars[0].get())
             interval_izmer = float(MainTrackerClass.main_entry_list_vars[1].get())
@@ -216,7 +219,7 @@ def subbmit_values(MainTrackerClass):
             main_entry_list_vars = None
             return
 
-        if MainTrackerClass.current_image == 1:
+        if MainTrackerClass.current_image == 1 or MainTrackerClass.current_image == 11:
             tx, ty, ax, ay, bx, by, cx, cy =  MainTrackerClass.xy_grid_list
             list_of_xys = [tx, ty, ax, ay, bx, by, cx, cy]
         elif MainTrackerClass.current_image == 2:
@@ -233,10 +236,8 @@ def subbmit_values(MainTrackerClass):
             messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введенных данных для координат фазных проводов и троса")
             return
 
-        # Module for Material Prop. data
         getted_list_matprop = list(map(lambda e: e.get(), MainTrackerClass.mat_var_list))
 
-        # Unit conversions happens here
         try:
             floated_list_matprop = list(map(lambda e: float(e), getted_list_matprop))
             if MainTrackerClass.edin_imzer_list_vars[2].get() == "кСм/м":
@@ -258,7 +259,7 @@ def subbmit_values(MainTrackerClass):
 
         try:
             tross_array = tross_config.get()
-            if MainTrackerClass.current_image == 1 and len(tross_array) != 16:
+            if ((MainTrackerClass.current_image == 1 or MainTrackerClass.current_image == 11) and (len(tross_array) != 16)):
                 messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введеного массива учета грозозащитного троса. Для выбранного типа опоры элементов должно быть 16")
                 return
             if MainTrackerClass.current_image == 2 and len(tross_array) != 28:
@@ -267,6 +268,13 @@ def subbmit_values(MainTrackerClass):
             tross_array_ints = [int(i) for i in tross_array]
         except:
             messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введеного массива учета грозозащитного троса.")
+            return
+
+        if ((MainTrackerClass.current_image == 1 or MainTrackerClass.current_image == 11) and (MainTrackerClass.columns_count != 6)):
+            messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Выбранный Вами тип опоры и приведенные данные в Excel документе не соответствуют. Для данного типа опоры столбцов в документе должно быть 6")
+            return
+        if MainTrackerClass.current_image == 2 and MainTrackerClass.columns_count != 12:
+            messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Выбранный Вами тип опоры и приведенные данные в Excel документе не соответствуют. Для данного типа опоры столбцов в документе должно быть 12")
             return
 
         MainTrackerClass.current_frame.pack_forget()
@@ -284,12 +292,11 @@ def subbmit_values(MainTrackerClass):
         progress_bar.start()
         progress_frame.pack(side=BOTTOM, anchor=E, fill=BOTH, expand=True)
 
-        # Clear all entries
+        # Очистка ячеек
         for entry in MainTrackerClass.all_entries + MainTrackerClass.xy_grid_list:
             try:
                 entry.delete(0, 'end')
             except Exception as error:
-                # print("Something went wrong!", error)
                 pass
         for label_des in MainTrackerClass.destroyables:
             label_des.destroy()
@@ -302,7 +309,7 @@ def subbmit_values(MainTrackerClass):
         final_message = f"Результаты расчетов записаны в папке: {prisoed_name}"
 
         result = subprocess.run([".\\binary.exe"], check=False, capture_output=False, shell=False)
-        if result.returncode == 0: # # 0 - если успешно
+        if result.returncode == 0: # 0 - если успешно
             draw_graphs(prisoed_name)
 
         progress_bar.stop()
@@ -310,7 +317,6 @@ def subbmit_values(MainTrackerClass):
         progress_bar.destroy()
         progress_frame.destroy()
         messagebox.showinfo(title="Расчет завершен!", message="Данные успешно обработаны!", detail=final_message)
-        #root.destroy()
         main_properties(MainTrackerClass)
 
     threading.Thread(target=submit_button).start()
@@ -376,9 +382,9 @@ def main_properties(main):
             progress_bar_label = ttk.Label(main_frame, text="Чтение файла...", anchor=CENTER, borderwidth=2, relief="groove")
             progress_bar_label.grid(row=row_cout+8, column=0, columnspan=4, sticky="EWNS")
             progress_bar.start()
-            # progress_frame.pack(side=BOTTOM, anchor=E, fill=BOTH, expand=True)
 
             excel_file = pd.ExcelFile(excel_filepath.get())
+            MainTrackerClass.columns_count = len(excel_file.sheet_names)
 
             dataframe = pd.read_excel(excel_file, excel_file.sheet_names[0], header=None)
             label_started = dict()
@@ -395,8 +401,6 @@ def main_properties(main):
                 label_started[item][1] -= i
 
             MainTrackerClass.label_started = label_started
-
-            print(MainTrackerClass.label_started)
 
             label_excel = ttk.Label(main_frame, text="Выбрать присоединение для расчета", width=55, anchor=CENTER, borderwidth=2, relief="groove", font=('Helvetica', 13))
             label_excel.grid(row=row_cout+7, column=0, sticky="EWNS", columnspan=4)
@@ -419,7 +423,6 @@ def main_properties(main):
     label_excel = ttk.Label(main_frame, text="Путь к EXCEL файлу", width=25, anchor=CENTER, borderwidth=2, relief="groove")
     label_excel.grid(row=row_cout+6, column=0, sticky="EWNS")
 
-    # MainTrackerClass.excel_file_path = StringVar()
     excel_filepath = ttk.Entry(main_frame, width=5, textvariable=excel_file_path)
     excel_filepath.grid(row=row_cout+6, column=1, sticky="EWNS")
     MainTrackerClass.all_entries.append(excel_filepath)
@@ -448,7 +451,7 @@ def draw_picture(canvas):
     MainTrackerClass.image_set = True
     MainTrackerClass.current_image = frame.get()
 
-    if MainTrackerClass.current_image == 1:
+    if MainTrackerClass.current_image == 1 or MainTrackerClass.current_image == 11:
         MainTrackerClass.mirror_button["state"] = "active"
     else:
         MainTrackerClass.mirror_button["state"] = "disabled"
@@ -464,7 +467,7 @@ def draw_picture(canvas):
     ttk.Label(xy_frame, text="X", width=1, anchor=CENTER, borderwidth=2, relief="groove").grid(row=1, column=2, sticky="EWNS")
 
 
-    # ROPE LABELS
+    # Заглавия Фаз
     for cur_lab in MainTrackerClass.xy_labels:
         if cur_lab:
             cur_lab.destroy()
@@ -476,7 +479,7 @@ def draw_picture(canvas):
         MainTrackerClass.xy_labels.append(l)
 
 
-    # XY ENTRIES
+    # Ячейки Фаз
     if previous_image != MainTrackerClass.current_image:
 
         for xy_curr_entries in MainTrackerClass.xy_grid_list:
