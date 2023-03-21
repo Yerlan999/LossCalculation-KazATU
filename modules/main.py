@@ -588,7 +588,7 @@ root = ThemedTk(theme=theme)
 root.geometry("600x600+0+0")
 
 
-pattern = re.compile(r'^([\.\d]*)$')
+pattern = re.compile(r'^([\-\.\d]*)$')
 pattern2 = re.compile(r'^([01]*)$')
 vcmd = (root.register(validate_numbers), "%i", "%P")
 vcmd2 = (root.register(validate_numbers2), "%i", "%P")
