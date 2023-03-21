@@ -136,19 +136,29 @@ def on_click(event):
 
 
 def draw_graphs(prisoed_name):
-    os.chdir(prisoed_name)
 
-    current_df = pd.read_csv('Эпюра токов.csv').dropna(axis=1, how='all')
-    fig, axs = plt.subplots(len(current_df.columns), sharex=True, figsize=(20,20))
-    fig.suptitle('Эпюра токов')
+    if os.path.isdir(prisoed_name):
+        os.chdir(prisoed_name)
+    else:
+        return 0
 
-    for i, column_name in enumerate(current_df.columns):
-        axs[i].plot(current_df.loc[:,column_name])
-        axs[i].set_title(column_name)
+    try:
+        current_df = pd.read_csv('Эпюра токов.csv').dropna(axis=1, how='all')
+        fig, axs = plt.subplots(len(current_df.columns), sharex=True, figsize=(20,20))
+        fig.suptitle('Эпюра токов')
 
-    plt.savefig('Эпюра токов.png')
+        for i, column_name in enumerate(current_df.columns):
+            axs[i].plot(current_df.loc[:,column_name])
+            axs[i].set_title(column_name)
+
+        plt.savefig('Эпюра токов.png')
+
+    except Exception as e:
+        os.chdir("..")
+        return 0
 
     os.chdir("..")
+    return 1
 
 
 
@@ -176,6 +186,10 @@ def finishing_part(excel_filepath_os, dlina_linii, interval_izmer, current_image
 
     with open("Введенные данные.json", "w") as outfile:
         outfile.write(json_object)
+
+    if os.path.exists("Введенные данные.json"):
+        return 1
+    return 0
 
 
 
@@ -266,6 +280,9 @@ def subbmit_values(MainTrackerClass):
                 messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введеного массива учета грозозащитного троса. Для выбранного типа опоры элементов должно быть 28")
                 return
             tross_array_ints = [int(i) for i in tross_array]
+            if (tross_array_ints.count(1) != tross_array_ints.count(0)):
+                messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введеного массива учета грозозащитного троса. Количество нулей и единиц должно быть одинаковым")
+                return
         except:
             messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введеного массива учета грозозащитного троса.")
             return
@@ -304,19 +321,30 @@ def subbmit_values(MainTrackerClass):
         prisoed_to_calc.set('')
         tross_config.set('')
 
-        finishing_part(excel_filepath_os, dlina_linii, interval_izmer, MainTrackerClass.current_image, floated_list_xys, floated_list_matprop, which_prisoed, MainTrackerClass.label_started, kol_zazem, tross_array_ints, prisoed_name)
-
-        final_message = f"Результаты расчетов записаны в папке: {prisoed_name}"
-
-        result = subprocess.run([".\\binary.exe"], check=False, capture_output=False, shell=False)
-        if result.returncode == 0: # 0 - если успешно
-            draw_graphs(prisoed_name)
+        config_created = finishing_part(excel_filepath_os, dlina_linii, interval_izmer, MainTrackerClass.current_image, floated_list_xys, floated_list_matprop, which_prisoed, MainTrackerClass.label_started, kol_zazem, tross_array_ints, prisoed_name)
+        if (config_created):
+            result = subprocess.run([".\\binary.exe"], check=False, capture_output=False, shell=False)
+            if result.returncode == 0: # 0 - если успешно
+                graph = ""
+                drawn = draw_graphs(prisoed_name)
+                if drawn: graph = ". Составлена эпюра токов."
+                final_title = "Расчет завершен!"
+                final_message = "Данные успешно обработаны!"
+                final_detail = f"Результаты расчетов записаны в папке: {prisoed_name}" + graph
+            else:
+                final_title = "Расчет остановлен!"
+                final_message = "Не получилось обработать данные!"
+                final_detail = f"При проведении расчета произошла ошибка. Код ошибки: {result.returncode}"
+        else:
+            final_title = "Расчет не запущен!"
+            final_message = "Не удалось получить данные!"
+            final_detail = "Не получилось создать файл с конфигурациями 'Введенные данные.json'"
 
         progress_bar.stop()
         progress_bar_label.destroy()
         progress_bar.destroy()
         progress_frame.destroy()
-        messagebox.showinfo(title="Расчет завершен!", message="Данные успешно обработаны!", detail=final_message)
+        messagebox.showinfo(title=final_title, message=final_message, detail=final_detail)
         main_properties(MainTrackerClass)
 
     threading.Thread(target=submit_button).start()
