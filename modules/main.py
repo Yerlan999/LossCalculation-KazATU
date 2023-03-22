@@ -27,7 +27,7 @@ class MainTrackerClass():
 
     image_set = False
     current_image = None
-    columns_count = None
+    sheets_count = None
 
     all_images_paths = {
         1: "pics/VL1.jpg",
@@ -117,7 +117,7 @@ def help_func():
     help_frame = ttk.Frame(help_root)
 
     ttk.Label(help_frame, text="Для выполнения расчетов необходимо заполнить все поля приведенные в двух разделах!", width=100, anchor=CENTER, borderwidth=2, relief="groove").pack(side=TOP, fill=BOTH, expand=True)
-    ttk.Label(help_frame, text="Иконку программы необходимо располагать рядом с папкой 'pics'", width=100, anchor=CENTER, borderwidth=2, relief="groove").pack(side=BOTTOM, fill=BOTH, expand=True)
+    ttk.Label(help_frame, text="Иконку 'программы расчета потерь' необходимо располагать рядом с: 1) папкой 'pics', 2) 'binary.exe' и 3) документом excel подстанции", width=100, anchor=CENTER, borderwidth=2, relief="groove").pack(side=BOTTOM, fill=BOTH, expand=True)
     ttk.Label(help_frame, text="Все разделы находятся в меню 'Входные данные'", width=100, anchor=CENTER, borderwidth=2, relief="groove").pack(side=BOTTOM, fill=BOTH, expand=True)
     help_frame.pack(side=LEFT, fill=BOTH, expand=True)
     help_root.mainloop()
@@ -274,24 +274,24 @@ def subbmit_values(MainTrackerClass):
         try:
             tross_array = tross_config.get()
             if ((MainTrackerClass.current_image == 1 or MainTrackerClass.current_image == 11) and (len(tross_array) != 16)):
-                messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введеного массива учета грозозащитного троса. Для выбранного типа опоры элементов должно быть 16")
+                messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail=f"Проверьте правильность введеного массива учета грозозащитного троса. Для выбранного типа опоры элементов должно быть 16. Пользователем введено: {len(tross_array)}")
                 return
             if MainTrackerClass.current_image == 2 and len(tross_array) != 28:
-                messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введеного массива учета грозозащитного троса. Для выбранного типа опоры элементов должно быть 28")
+                messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail=f"Проверьте правильность введеного массива учета грозозащитного троса. Для выбранного типа опоры элементов должно быть 28. Пользователем введено: {len(tross_array)}")
                 return
             tross_array_ints = [int(i) for i in tross_array]
             if (tross_array_ints.count(1) != tross_array_ints.count(0)):
-                messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введеного массива учета грозозащитного троса. Количество нулей и единиц должно быть одинаковым")
+                messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail=f"Проверьте правильность введеного массива учета грозозащитного троса. Количество нулей и единиц должно быть одинаковым. Пользователем введено: нулей: {tross_array_ints.count(0)}, единиц: {tross_array_ints.count(1)}.")
                 return
         except:
             messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Проверьте правильность введеного массива учета грозозащитного троса.")
             return
 
-        if ((MainTrackerClass.current_image == 1 or MainTrackerClass.current_image == 11) and (MainTrackerClass.columns_count != 6)):
-            messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Выбранный Вами тип опоры и приведенные данные в Excel документе не соответствуют. Для данного типа опоры столбцов в документе должно быть 6")
+        if ((MainTrackerClass.current_image == 1 or MainTrackerClass.current_image == 11) and (MainTrackerClass.sheets_count != 6)):
+            messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail=f"Выбранный Вами тип опоры и приведенные данные в Excel документе не соответствуют. Для данного типа опоры столбцов в документе должно быть 6. В приведнном excel документе содержится: {MainTrackerClass.sheets_count} листов.")
             return
-        if MainTrackerClass.current_image == 2 and MainTrackerClass.columns_count != 12:
-            messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Выбранный Вами тип опоры и приведенные данные в Excel документе не соответствуют. Для данного типа опоры столбцов в документе должно быть 12")
+        if MainTrackerClass.current_image == 2 and MainTrackerClass.sheets_count != 12:
+            messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail=f"Выбранный Вами тип опоры и приведенные данные в Excel документе не соответствуют. Для данного типа опоры столбцов в документе должно быть 12. В приведнном excel документе содержится: {MainTrackerClass.sheets_count} листов.")
             return
 
         MainTrackerClass.current_frame.pack_forget()
@@ -412,7 +412,7 @@ def main_properties(main):
             progress_bar.start()
 
             excel_file = pd.ExcelFile(excel_filepath.get())
-            MainTrackerClass.columns_count = len(excel_file.sheet_names)
+            MainTrackerClass.sheets_count = len(excel_file.sheet_names)
 
             dataframe = pd.read_excel(excel_file, excel_file.sheet_names[0], header=None)
             label_started = dict()
