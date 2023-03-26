@@ -235,10 +235,10 @@ def subbmit_values(MainTrackerClass):
 
         if MainTrackerClass.current_image == 1 or MainTrackerClass.current_image == 11:
             tx, ty, ax, ay, bx, by, cx, cy =  MainTrackerClass.xy_grid_list
-            list_of_xys = [tx, ty, ax, ay, bx, by, cx, cy]
+            list_of_xys = [ax, ay, bx, by, cx, cy, tx, ty]
         elif MainTrackerClass.current_image == 2:
             tx, ty, a1x, a1y, b1x, b1y, c1x, c1y, a2x, a2y, b2x, b2y, c2x, c2y =  MainTrackerClass.xy_grid_list
-            list_of_xys = [tx, ty, a1x, a1y, b1x, b1y, c1x, c1y, a2x, a2y, b2x, b2y, c2x, c2y]
+            list_of_xys = [a1x, a1y, b1x, b1y, c1x, c1y, a2x, a2y, b2x, b2y, c2x, c2y, tx, ty]
         else:
             messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail="Введите данные о координатах фазных проводов и троса")
             return
@@ -309,6 +309,13 @@ def subbmit_values(MainTrackerClass):
         progress_bar.start()
         progress_frame.pack(side=BOTTOM, anchor=E, fill=BOTH, expand=True)
 
+        MainTrackerClass.menus_bars[0].entryconfig("Общие характеристики линии", state="disabled")
+        MainTrackerClass.menus_bars[0].entryconfig("Характеристика опоры", state="disabled")
+        MainTrackerClass.menus_bars[0].entryconfig("Рассчитать потери", state="disabled")
+
+        MainTrackerClass.menus_bars[1].entryconfig("Инструкция программы", state="disabled")
+        MainTrackerClass.menus_bars[1].entryconfig("Выйти из программы", state="disabled")
+
         # Очистка ячеек
         for entry in MainTrackerClass.all_entries + MainTrackerClass.xy_grid_list:
             try:
@@ -346,6 +353,13 @@ def subbmit_values(MainTrackerClass):
         progress_frame.destroy()
         messagebox.showinfo(title=final_title, message=final_message, detail=final_detail)
         main_properties(MainTrackerClass)
+
+        MainTrackerClass.menus_bars[0].entryconfig("Общие характеристики линии", state="normal")
+        MainTrackerClass.menus_bars[0].entryconfig("Характеристика опоры", state="normal")
+        MainTrackerClass.menus_bars[0].entryconfig("Рассчитать потери", state="normal")
+
+        MainTrackerClass.menus_bars[1].entryconfig("Инструкция программы", state="normal")
+        MainTrackerClass.menus_bars[1].entryconfig("Выйти из программы", state="normal")
 
     threading.Thread(target=submit_button).start()
 
@@ -411,6 +425,13 @@ def main_properties(main):
             progress_bar_label.grid(row=row_cout+8, column=0, columnspan=4, sticky="EWNS")
             progress_bar.start()
 
+            MainTrackerClass.menus_bars[0].entryconfig("Общие характеристики линии", state="disabled")
+            MainTrackerClass.menus_bars[0].entryconfig("Характеристика опоры", state="disabled")
+            MainTrackerClass.menus_bars[0].entryconfig("Рассчитать потери", state="disabled")
+
+            MainTrackerClass.menus_bars[1].entryconfig("Инструкция программы", state="disabled")
+            MainTrackerClass.menus_bars[1].entryconfig("Выйти из программы", state="disabled")
+
             excel_file = pd.ExcelFile(excel_filepath.get())
             MainTrackerClass.sheets_count = len(excel_file.sheet_names)
 
@@ -444,6 +465,13 @@ def main_properties(main):
             progress_bar_label.destroy()
             progress_bar.destroy()
             progress_frame.destroy()
+
+            MainTrackerClass.menus_bars[0].entryconfig("Общие характеристики линии", state="normal")
+            MainTrackerClass.menus_bars[0].entryconfig("Характеристика опоры", state="normal")
+            MainTrackerClass.menus_bars[0].entryconfig("Рассчитать потери", state="normal")
+
+            MainTrackerClass.menus_bars[1].entryconfig("Инструкция программы", state="normal")
+            MainTrackerClass.menus_bars[1].entryconfig("Выйти из программы", state="normal")
 
         threading.Thread(target=read_excel, args=(excel_filepath, main_frame)).start()
 
@@ -490,9 +518,10 @@ def draw_picture(canvas):
     img = ImageTk.PhotoImage(resized)
     canvas.create_image(0, 0, anchor=NW, image=img)
 
+    ttk.Label(xy_frame, text="Координаты проводов", width=15, anchor=CENTER, borderwidth=2, relief="groove", font=('Helvetica', 13)).grid(row=1, column=1, columnspan=3, sticky="EWNS")
 
-    ttk.Label(xy_frame, text="Y", width=1, anchor=CENTER, borderwidth=2, relief="groove").grid(row=1, column=3, sticky="EWNS")
-    ttk.Label(xy_frame, text="X", width=1, anchor=CENTER, borderwidth=2, relief="groove").grid(row=1, column=2, sticky="EWNS")
+    ttk.Label(xy_frame, text="Y", width=1, anchor=CENTER, borderwidth=2, relief="groove").grid(row=2, column=3, sticky="EWNS")
+    ttk.Label(xy_frame, text="X", width=1, anchor=CENTER, borderwidth=2, relief="groove").grid(row=2, column=2, sticky="EWNS")
 
 
     # Заглавия Фаз
@@ -502,7 +531,7 @@ def draw_picture(canvas):
     MainTrackerClass.xy_labels= []
 
 
-    for i, label in enumerate(MainTrackerClass.xyframe_label_dict[frame.get()], start=2):
+    for i, label in enumerate(MainTrackerClass.xyframe_label_dict[frame.get()], start=3):
         l=ttk.Label(xy_frame, text=label, width=4, anchor=CENTER, borderwidth=2, relief="groove"); l.grid(row=i, column=1, sticky="EWNS")
         MainTrackerClass.xy_labels.append(l)
 
@@ -515,7 +544,7 @@ def draw_picture(canvas):
                 xy_curr_entries.destroy()
         MainTrackerClass.xy_grid_list = []
 
-        for i, rope in enumerate(MainTrackerClass.xyframe_label_dict[frame.get()], start=2):
+        for i, rope in enumerate(MainTrackerClass.xyframe_label_dict[frame.get()], start=3):
             for j, xy in enumerate(MainTrackerClass.xy_headers, start=2):
                 inp_var = (rope+xy).lower()
                 exec(inp_var + "=StringVar()")
@@ -545,7 +574,9 @@ def xy_properties(main):
 
     MainTrackerClass.mirror_button = ttk.Button(xy_frame, text="<>", command=lambda:mirror_picture(canvas), cursor='hand2')
     MainTrackerClass.mirror_button.grid(row=9, column=0, sticky="SE")
-    MainTrackerClass.mirror_button["state"] = "disabled"
+
+    if not MainTrackerClass.current_image or MainTrackerClass.current_image == 2:
+        MainTrackerClass.mirror_button["state"] = "disabled"
 
     ttk.Label(xy_frame, text="Тип опоры", width=25, anchor=CENTER, borderwidth=2, relief="groove").grid(row=10, column=0, columnspan=1, sticky="EWNS")
 
@@ -563,8 +594,8 @@ def xy_properties(main):
         bg2 = ImageTk.PhotoImage(resized)
         canvas.create_image(0, 0, image=bg2, anchor='nw')
 
-    ttk.Radiobutton(xy_frame, text="Одноцепная промежуточная", variable=frame, value=1, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=11, column=0, sticky="WNS")
-    ttk.Radiobutton(xy_frame, text="Двухцепная промежуточная", variable=frame, value=2, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=12, column=0, sticky="WNS")
+    ttk.Radiobutton(xy_frame, text="Одноцепная ЛЭП", variable=frame, value=1, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=11, column=0, sticky="WNS")
+    ttk.Radiobutton(xy_frame, text="Двухцепная ЛЭП", variable=frame, value=2, command=lambda:draw_picture(canvas), cursor='hand2').grid(row=12, column=0, sticky="WNS")
 
     ttk.Label(xy_frame, text="Учет грозозащитного троса", width=75, anchor=CENTER, borderwidth=2, relief="groove", font=('Helvetica', 13)).grid(row=13, column=0, columnspan=4, sticky="EWNS")
 
@@ -629,9 +660,12 @@ helpmenu.add_command(label="Инструкция программы", command=he
 helpmenu.add_command(label="Выйти из программы", command=on_closing)
 menubar.add_cascade(label="О программе", menu=helpmenu)
 
-root.config(menu=menubar)
+helpmenu.entryconfig("Инструкция программы", state="disabled")
 
+root.config(menu=menubar)
 root.protocol("WM_DELETE_WINDOW", on_closing)
+
+MainTrackerClass.menus_bars = [filemenu, helpmenu]
 
 for main_var, *rest in MainTrackerClass.main_entry_list_names:
     exec(main_var + "=StringVar()")
