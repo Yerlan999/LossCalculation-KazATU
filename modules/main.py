@@ -288,10 +288,10 @@ def subbmit_values(MainTrackerClass):
             return
 
         if ((MainTrackerClass.current_image == 1 or MainTrackerClass.current_image == 11) and (MainTrackerClass.sheets_count != 6)):
-            messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail=f"Выбранный Вами тип опоры и приведенные данные в Excel документе не соответствуют. Для данного типа опоры столбцов в документе должно быть 6. В приведнном excel документе содержится: {MainTrackerClass.sheets_count} листов.")
+            messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail=f"Выбранный Вами тип опоры и приведенные данные в Excel документе не соответствуют. Для данного типа опоры листов в документе должно быть 6. В приведнном excel документе содержится: {MainTrackerClass.sheets_count} листов.")
             return
         if MainTrackerClass.current_image == 2 and MainTrackerClass.sheets_count != 12:
-            messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail=f"Выбранный Вами тип опоры и приведенные данные в Excel документе не соответствуют. Для данного типа опоры столбцов в документе должно быть 12. В приведнном excel документе содержится: {MainTrackerClass.sheets_count} листов.")
+            messagebox.showerror(title="Ошибка!", message="Недостаточно данных для расчета", detail=f"Выбранный Вами тип опоры и приведенные данные в Excel документе не соответствуют. Для данного типа опоры листов в документе должно быть 12. В приведнном excel документе содержится: {MainTrackerClass.sheets_count} листов.")
             return
 
         MainTrackerClass.current_frame.pack_forget()
